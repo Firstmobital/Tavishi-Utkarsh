@@ -58,6 +58,8 @@ function leftCurvePoints({ x0, cx, shoulderY, apexY, lobes }) {
  * @param {boolean} [o.closed] close the path along the bottom (for fills/clips)
  * @param {number} [o.sx]     x scale for output
  * @param {number} [o.sy]     y scale for output
+ * @param {number} [o.ox]     x offset (applied before scaling)
+ * @param {number} [o.oy]     y offset (applied before scaling)
  */
 export function archPath({
   W,
@@ -69,6 +71,8 @@ export function archPath({
   closed = false,
   sx = 1,
   sy = 1,
+  ox = 0,
+  oy = 0,
 }) {
   const x0 = inset;
   const x1 = W - inset;
@@ -82,8 +86,8 @@ export function archPath({
     .map(([x, y]) => [W - x, y]);
   const pts = [...left, ...right];
 
-  const X = (x) => r2(x * sx);
-  const Y = (y) => r2(y * sy);
+  const X = (x) => r2((x + ox) * sx);
+  const Y = (y) => r2((y + oy) * sy);
   let d = `M${X(x0)} ${Y(bottom)}L${X(x0)} ${Y(shoulderY)}`;
   for (let i = 1; i < pts.length; i++) {
     const [ax, ay] = pts[i - 1];

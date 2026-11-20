@@ -16,116 +16,6 @@ export const C = {
   goldLight: '#C9A45C',
 };
 
-const LEAF = 'M0 0C5-5.5 14-6 21 0C14 6 5 5.5 0 0Z';
-const BRACT = 'M0 0C-6.5-2.5-9-11-2.6-16.5Q0-18.4 2.6-16.5C9-11 6.5-2.5 0 0Z';
-
-const n1 = (v) => Math.round(v * 10) / 10;
-const n2 = (v) => Math.round(v * 100) / 100;
-const xf = (x, y, a, sc) => `translate(${n1(x)} ${n1(y)})${a ? ` rotate(${Math.round(a)})` : ''} scale(${n2(sc)})`;
-
-/* Shared shapes, defined once in the sprite and reused with <use> (keeps the HTML small). */
-const LEAF_COLORS = [C.leaf, C.leaf2, '#1C4A38'];
-const CLUSTER_FILLS = [
-  [C.rose, C.rose2, C.pink],
-  [C.rose2, C.pink, C.blush],
-  [C.pink, C.blush, C.rose2],
-];
-function shapeDefs() {
-  const leaves = LEAF_COLORS.map(
-    (c, i) =>
-      `<g id="ol${i}"><path d="${LEAF}" fill="${c}"/><path d="M1 0H17" stroke="${C.cream}" stroke-opacity=".35" stroke-width=".6"/></g>`,
-  ).join('');
-  const clusters = CLUSTER_FILLS.map((fills, t) => {
-    const bracts = [0, 120, 240]
-      .map(
-        (a, i) =>
-          `<g transform="rotate(${a})"><path d="${BRACT}" fill="${fills[i]}" stroke="#8E1B47" stroke-opacity=".35" stroke-width=".5"/><path d="M0-2V-13M0-7l-3-3M0-9l3-3" stroke="#8E1B47" stroke-opacity=".28" stroke-width=".45" fill="none"/></g>`,
-      )
-      .join('');
-    return `<g id="oc${t}">${bracts}<circle r="1.6" cy="-1" fill="${C.cream}"/><circle r="1.2" cx="1.8" cy="1.2" fill="${C.cream}"/><circle r="1.2" cx="-1.8" cy="1.2" fill="${C.cream}"/></g>`;
-  }).join('');
-  const roses = ['#FBF1EC', '#F6D3DA']
-    .map(
-      (fill, i) =>
-        `<g id="or${i}"><circle r="1" fill="${fill}"/><path d="M-.55 .1a.55 .5 0 1 1 .6 .4M-.15 -.1a.25 .25 0 1 1 .3 .2" fill="none" stroke="#C99A92" stroke-opacity=".55" stroke-width=".13"/></g>`,
-    )
-    .join('');
-  return leaves + clusters + roses;
-}
-
-export const leaf = ([x, y, a, s = 1, c = C.leaf]) => {
-  const i = Math.max(0, LEAF_COLORS.indexOf(c));
-  return `<use href="#ol${i}" transform="${xf(x, y, a, s)}"/>`;
-};
-
-/** A bougainvillea cluster: three papery bracts with tiny cream florets. */
-export const cluster = ([x, y, rot = 0, s = 1, tone = 0]) =>
-  `<use href="#oc${tone}" transform="${xf(x, y, rot, s)}"/>`;
-
-/** Garden rose (white or blush). */
-export const rose = (x, y, r, blush = false) => `<use href="#or${blush ? 1 : 0}" transform="${xf(x, y, 0, r)}"/>`;
-
-/** Corner sprig of bougainvillea — grows from the top-left corner (0,0). */
-function sprig() {
-  const stems = [
-    'M2 3C34 8 64 24 92 52S132 104 140 128',
-    'M30 10C38 30 40 52 30 80',
-    'M64 26C84 26 104 16 124 4',
-    'M92 52C80 70 76 88 80 108',
-  ];
-  const leaves = [
-    [16, 6, -30, 0.9, C.leaf2],
-    [24, 7, 40, 0.8],
-    [42, 14, -60, 0.95],
-    [50, 18, 30, 1, C.leaf2],
-    [34, 34, 150, 0.85],
-    [38, 44, 20, 0.8, C.leaf2],
-    [78, 38, -40, 1],
-    [84, 22, -100, 0.75, C.leaf2],
-    [104, 16, -20, 0.85],
-    [104, 66, 20, 1, C.leaf2],
-    [112, 82, 110, 0.9],
-    [86, 76, 160, 0.85, C.leaf2],
-    [124, 104, 40, 0.8],
-    [132, 112, 150, 0.7, C.leaf2],
-  ];
-  const clusters = [
-    [30, 82, 10, 1.05, 0],
-    [22, 66, -30, 0.8, 1],
-    [128, 14, 70, 0.95, 0],
-    [110, 24, 20, 0.75, 2],
-    [80, 110, -20, 1, 1],
-    [94, 96, 40, 0.8, 0],
-    [140, 130, 0, 0.95, 0],
-    [60, 26, 30, 0.7, 2],
-    [124, 116, -50, 0.7, 1],
-  ];
-  return `<symbol id="o-sprig" viewBox="0 0 160 150">
-    <g fill="none" stroke="${C.stem}" stroke-width="1.5" stroke-linecap="round">${stems
-      .map((d) => `<path d="${d}"/>`)
-      .join('')}</g>
-    ${leaves.map(leaf).join('')}
-    ${clusters.map(cluster).join('')}
-  </symbol>`;
-}
-
-/** Small floral corner for cards: a lotus bud with two leaves and a bract pair. */
-function cornerFloral() {
-  return `<symbol id="o-corner" viewBox="0 0 90 90">
-    <g fill="none" stroke="${C.stem}" stroke-width="1.2" stroke-linecap="round">
-      <path d="M8 8C26 12 42 24 56 40"/>
-      <path d="M8 8C12 26 24 42 40 56"/>
-    </g>
-    ${leaf([30, 13, 20, 0.8])}
-    ${leaf([13, 30, 70, 0.8, C.leaf2])}
-    ${leaf([46, 24, 60, 0.7, C.leaf2])}
-    ${leaf([24, 46, 30, 0.7])}
-    ${cluster([58, 42, 30, 0.85, 0])}
-    ${cluster([42, 58, -60, 0.85, 1])}
-    ${cluster([30, 30, 45, 0.7, 2])}
-  </symbol>`;
-}
-
 /** Lotus used at the centre of gold dividers. */
 function lotus() {
   return `<symbol id="o-lotus" viewBox="0 0 48 30">
@@ -140,20 +30,18 @@ function lotus() {
   </symbol>`;
 }
 
-/** Hanging strand of bougainvillea and jasmine buds ending in a gold tassel. */
-function strandSymbol() {
-  let beads = '';
-  for (let i = 0, y = 8; y < 180; i++, y += 9) {
-    beads +=
-      i % 4 === 3
-        ? `<ellipse cx="10" cy="${y}" rx="2.6" ry="3.6" fill="#FFF8EC"/>`
-        : cluster([10, y, (i * 47) % 120, 0.34, i % 3]);
-    if (i % 5 === 2) beads += leaf([10, y + 3, i % 2 ? 30 : 150, 0.45, C.leaf2]);
-  }
-  return `<symbol id="o-strand" viewBox="0 0 20 200" preserveAspectRatio="xMidYMin meet">
-    <path d="M10 0V184" stroke="#C9A45C" stroke-width=".8"/>
-    ${beads}
-    <path d="M6 184h8l-2 4h-4z" fill="#C9A45C"/><path d="M8 188h4l1 10h-6z" fill="#B08D57"/>
+/** Fine gold filigree corner (line art) for cards. */
+function filigreeCorner() {
+  return `<symbol id="o-filigree" viewBox="0 0 64 64">
+    <g fill="none" stroke="#B08D57" stroke-linecap="round">
+      <path d="M3 61V22C3 11 11 3 22 3H61" stroke-width="1.3"/>
+      <path d="M9 61V25C9 16 16 9 25 9H61" stroke-width=".7" stroke-opacity=".7"/>
+      <path d="M22 3c-7 5-7 14 0 16 6 2 9-5 4-8" stroke-width="1"/>
+      <path d="M3 22c5 7 14 7 16 0 2-6-5-9-8-4" stroke-width="1"/>
+      <path d="M36 3q6 5 12 0M3 36q5 6 0 12" stroke-width=".9"/>
+    </g>
+    <path d="M14 14c5-2 9 2 7 7-5 2-9-2-7-7Z" fill="#C9A45C"/>
+    <circle cx="61" cy="3" r="1.6" fill="#C9A45C"/><circle cx="3" cy="61" r="1.6" fill="#C9A45C"/>
   </symbol>`;
 }
 
@@ -185,8 +73,8 @@ function icons() {
   ].join('');
 }
 
-export function sprite() {
-  return `<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><defs>${shapeDefs()}${sprig()}${cornerFloral()}${lotus()}${finial()}${strandSymbol()}${icons()}</defs></svg>`;
+export function sprite(extraDefs = '') {
+  return `<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><defs>${extraDefs}${lotus()}${finial()}${filigreeCorner()}${icons()}</defs></svg>`;
 }
 
 export const use = (id, cls = '', extra = '') =>

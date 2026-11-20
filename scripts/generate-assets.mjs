@@ -1,7 +1,6 @@
 /**
  * Generates derived image assets into public/ (outputs are committed):
- *   - responsive image variants (venue *-900.webp, couple *-800.webp)
- *   - portrait hero crops of the floral dome + blurred desktop backdrop
+ *   - responsive couple photo variants (*-480.webp, *-800.webp)
  *   - og-image.jpg (1200x630 social / WhatsApp preview)
  *   - favicon.svg monogram + apple-touch-icon.png
  *
@@ -29,13 +28,10 @@ const loadFont = async (file) =>
 /* ---------- responsive variants ---------- */
 async function variants() {
   // 480w for phones, 800/900w for high-DPR screens (paired via srcset in render.js)
-  const jobs = [
-    ['venue', [480, 900]],
-    ['couple', [480, 800]],
-  ];
+  const jobs = [['couple', [480, 800]]];
   for (const [dir, widths] of jobs) {
     const files = (await readdir(pub('images', dir))).filter(
-      (f) => f.endsWith('.webp') && !/-(480|800|900)\.webp$/.test(f) && !/-(hero|blur)/.test(f),
+      (f) => f.endsWith('.webp') && !/-(480|800|900)\.webp$/.test(f),
     );
     for (const f of files) {
       for (const width of widths) {
@@ -44,28 +40,6 @@ async function variants() {
       }
     }
   }
-}
-
-/* ---------- hero crops + backdrop ---------- */
-async function hero() {
-  const src = pub('images/venue/floral-dome.webp');
-  const { width, height } = await sharp(src).metadata();
-  const cropW = Math.round(height * 0.72);
-  const left = Math.round((width - cropW) / 2);
-  const crop = sharp(src).extract({ left, top: 0, width: cropW, height });
-  const buf = await crop.toBuffer();
-  for (const w of [480, 720]) {
-    await sharp(buf)
-      .resize({ width: w })
-      .webp({ quality: 70 })
-      .toFile(pub(`images/venue/floral-dome-hero-${w}.webp`));
-  }
-  await sharp(src)
-    .resize({ width: 480 })
-    .blur(14)
-    .modulate({ brightness: 0.9 })
-    .webp({ quality: 55 })
-    .toFile(pub('images/venue/floral-dome-blur.webp'));
 }
 
 /* ---------- text helpers ---------- */
@@ -198,7 +172,6 @@ const [script, caps] = await Promise.all([
   loadFont('Cinzel-Medium.ttf'),
 ]);
 await variants();
-await hero();
 await ogImage(script, caps);
 await favicon(script, caps);
 console.log('Assets generated in public/');

@@ -28,17 +28,20 @@ const loadFont = async (file) =>
 
 /* ---------- responsive variants ---------- */
 async function variants() {
+  // 480w for phones, 800/900w for high-DPR screens (paired via srcset in render.js)
   const jobs = [
-    ['venue', 900],
-    ['couple', 800],
+    ['venue', [480, 900]],
+    ['couple', [480, 800]],
   ];
-  for (const [dir, width] of jobs) {
+  for (const [dir, widths] of jobs) {
     const files = (await readdir(pub('images', dir))).filter(
-      (f) => f.endsWith('.webp') && !/-(800|900)\.webp$/.test(f) && !/-(hero|blur)/.test(f),
+      (f) => f.endsWith('.webp') && !/-(480|800|900)\.webp$/.test(f) && !/-(hero|blur)/.test(f),
     );
     for (const f of files) {
-      const out = pub('images', dir, f.replace('.webp', `-${width}.webp`));
-      await sharp(pub('images', dir, f)).resize({ width }).webp({ quality: 74 }).toFile(out);
+      for (const width of widths) {
+        const out = pub('images', dir, f.replace('.webp', `-${width}.webp`));
+        await sharp(pub('images', dir, f)).resize({ width }).webp({ quality: 72 }).toFile(out);
+      }
     }
   }
 }

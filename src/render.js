@@ -6,6 +6,7 @@
  */
 import { archPath, ARCH_TOP } from './lib/arch.js';
 import { sprite, use, divider } from './lib/ornaments.js';
+import { heroScene, eventArt, settingScene, gazeboScene } from './lib/scenes.js';
 
 /* ---------- helpers ---------- */
 const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -40,14 +41,8 @@ const cuspDots = (cusps, r = 1.8) =>
     .join('');
 
 /** Decorative layers for a variable-height arch card. */
-function archLayers({ fill = true, image = '', imageAlt = '' } = {}) {
-  const fillLayer = fill
-    ? `<div class="arch-card__fill" aria-hidden="true">${
-        image
-          ? `<img class="arch-card__img" src="${esc(image)}"${srcset(image, '(min-width: 600px) 400px, 92vw')} alt="${esc(imageAlt)}" loading="lazy" decoding="async" width="900" height="500">`
-          : ''
-      }</div>`
-    : '';
+function archLayers({ fill = true } = {}) {
+  const fillLayer = fill ? `<div class="arch-card__fill" aria-hidden="true"></div>` : '';
   return `${fillLayer}<div class="arch-card__frame" aria-hidden="true">
     <svg class="arch-card__top" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" focusable="false">
       <path class="arch-card__line" d="${archOuter.d}"/>
@@ -85,12 +80,15 @@ function hero(c) {
   const h = c.hero;
   return `
   <section class="hero" id="cover" aria-label="Cover">
-    <img class="hero__bg" src="${esc(h.image.src)}" srcset="${esc(h.image.srcset)}"
-      sizes="(min-width: 600px) 480px, 100vw" alt="${esc(h.image.alt)}"
-      fetchpriority="high" decoding="async" width="720" height="1079">
-    <div class="hero__shade" aria-hidden="true"></div>
+    <div class="hero__sky" aria-hidden="true"></div>
+    <div class="twinkles" aria-hidden="true"></div>
+    <div class="hero__scene-wrap" aria-hidden="true">${heroScene()}</div>
     <div class="petals" aria-hidden="true"></div>
     <div class="hero__frame arch-card arch-card--outline">${archLayers({ fill: false })}</div>
+    ${use('o-strand', 'strand strand--1')}
+    ${use('o-strand', 'strand strand--2')}
+    ${use('o-strand', 'strand strand--3')}
+    ${use('o-strand', 'strand strand--4')}
     ${use('o-sprig', 'sprig sprig--hero-l')}
     ${use('o-sprig', 'sprig sprig--hero-r')}
     <div class="hero__content">
@@ -107,6 +105,7 @@ function hero(c) {
     <a class="scroll-cue" href="#invitation" aria-label="Scroll to the invitation">
       <span>${esc(h.scrollLabel)}</span>${use('i-chevron', 'scroll-cue__icon')}
     </a>
+    <div class="hero__edge" aria-hidden="true"></div>
   </section>`;
 }
 
@@ -243,8 +242,9 @@ function eventCard(ev, i, c) {
   const slug = `${c.couple.bride}-${c.couple.groom}-${ev.id}`.toLowerCase().replace(/[^a-z0-9-]+/g, '-');
   return `
     <article class="arch-card event reveal" style="--d:${(i % 2) * 90}ms" aria-labelledby="ev-${esc(ev.id)}">
-      ${archLayers({ image: ev.image })}
+      ${archLayers()}
       <div class="arch-card__content event__content">
+        ${eventArt(ev.art)}
         <p class="event__date"><span>${esc(ev.day)}</span>${esc(ev.date)}</p>
         <h3 class="event__name" id="ev-${esc(ev.id)}">${esc(ev.name)}</h3>
         <ul class="event__timings" role="list">${timings}</ul>
@@ -279,18 +279,15 @@ function timeline(c) {
   </section>`;
 }
 
-function gallery(c) {
-  const g = c.gallery;
-  const items = g.images
-    .map(
-      (im) => `
-      <li class="gallery__item"><img src="${esc(im.src)}"${srcset(im.src, '(min-width: 600px) 400px, 84vw')} alt="${esc(im.alt)}" loading="lazy" decoding="async" width="900" height="500"></li>`,
-    )
-    .join('');
+function setting(c) {
+  const g = c.setting;
   return `
-  <section class="section section--gallery" id="setting" aria-labelledby="setting-title">
+  <section class="section section--setting" id="setting" aria-labelledby="setting-title">
     ${sectionHead(g.eyebrow, g.title, '', 'setting-title')}
-    <ul class="gallery reveal" role="list" aria-label="Venue décor gallery" tabindex="0">${items}</ul>
+    <figure class="setting reveal">
+      <div class="setting__frame">${settingScene()}</div>
+      ${g.text ? `<figcaption class="setting__text">${esc(g.text)}</figcaption>` : ''}
+    </figure>
   </section>`;
 }
 
@@ -365,7 +362,7 @@ function closing(c) {
   const x = c.closing;
   return `
   <section class="closing" aria-label="Closing note">
-    <img class="closing__img" src="${esc(x.image)}"${srcset(x.image, '(min-width: 600px) 480px, 100vw')} alt="${esc(x.imageAlt)}" loading="lazy" decoding="async" width="900" height="528">
+    ${gazeboScene()}
     <div class="closing__text reveal">
       <p class="closing__signoff">${esc(x.signoff)}</p>
       ${divider('divider--small')}
@@ -400,7 +397,7 @@ export function renderBody(c) {
     ${invitation(c)}
     ${meetCouple(c)}
     ${timeline(c)}
-    ${gallery(c)}
+    ${setting(c)}
     ${family(c)}
     ${rsvp(c)}
     ${countdown(c)}
@@ -440,7 +437,6 @@ export function renderHead(c, { siteUrl = '' } = {}) {
     <meta name="twitter:image" content="${esc(abs(m.ogImage))}">
     <meta name="twitter:image:alt" content="${esc(m.ogImageAlt)}">
 
-    <link rel="preload" as="image" href="${esc(c.hero.image.src)}" imagesrcset="${esc(c.hero.image.srcset)}" imagesizes="(min-width: 600px) 480px, 100vw" fetchpriority="high">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="${fonts}" media="print" onload="this.media='all'">

@@ -3,6 +3,8 @@
 A mobile-first, single-page digital wedding invitation built with **Vite + vanilla HTML/CSS/JS**.
 The page is rendered at build time from one content file, so it ships as plain static HTML (fast on low-end phones, works without JavaScript).
 
+The décor is shown only as **original SVG illustrations** inspired by its themes (gold birdcage dome, bougainvillea, emerald lattice, fairy lights, a Rajasthani palace skyline). No venue photos are used or deployed, so the real setting stays a surprise. Each event card's illustration is picked with `art: 'dome' | 'mandap' | 'lanterns'` in `src/content.js`.
+
 ## Edit the content
 
 Everything (names, dates, timings, venues, map links, hashtag, RSVP contacts, family lists, countdown date) lives in **`src/content.js`**. Edit it and save. The dev server reloads automatically.
@@ -35,7 +37,7 @@ npm run preview
 
 ### Regenerating images
 
-The social preview (`public/og-image.jpg`), favicon, hero crops, blurred desktop backdrop and responsive image variants (`*-480/800/900.webp`) are generated with `sharp` and committed. Re-run this after changing the couple's names or replacing photos in `public/images/`:
+The social preview (`public/og-image.jpg`), favicon and responsive couple-photo variants (`*-480/800.webp`) are generated with `sharp` and committed. Re-run this after changing the couple's names or replacing photos in `public/images/couple/`:
 
 ```bash
 npm run generate:assets
@@ -67,8 +69,9 @@ src/content.js          ← all text and details
 src/render.js           markup templates (pure functions)
 src/lib/arch.js         scalloped jharokha arch generator (SVG paths)
 src/lib/ornaments.js    hand-drawn SVG ornaments (bougainvillea, lotus, icons)
+src/lib/scenes.js       illustrated scenes (hero night garden, event vignettes, pergola, gazebo)
 src/style.css           styles and animations
 src/main.js             reveal-on-scroll, petals, music, lightbox, countdown
 scripts/generate-assets.mjs   OG image, favicon and image variants (sharp)
-public/                 static files (images, og-image.jpg, favicon)
+public/                 static files (couple photos, og-image.jpg, favicon)
 ```

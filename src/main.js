@@ -47,6 +47,26 @@ function initPetals() {
   host.appendChild(frag);
 }
 
+/* ---------- twinkling stars in the hero sky ---------- */
+function initTwinkles() {
+  const host = $('.twinkles');
+  if (!host) return;
+  const frag = document.createDocumentFragment();
+  for (let i = 0; i < 16; i++) {
+    const t = document.createElement('span');
+    t.className = 'twinkle';
+    t.style.cssText = [
+      `--x:${(3 + Math.random() * 94).toFixed(1)}%`,
+      `--y:${(4 + Math.random() * 88).toFixed(1)}%`,
+      `--s:${(1.5 + Math.random() * 2).toFixed(1)}px`,
+      `--dur:${(1.6 + Math.random() * 2.4).toFixed(1)}s`,
+      `--delay:${(-Math.random() * 4).toFixed(1)}s`,
+    ].join(';');
+    frag.appendChild(t);
+  }
+  host.appendChild(frag);
+}
+
 /* Pause hero animations while the cover is off-screen (saves battery / GPU). */
 function initHeroPause() {
   const hero = $('.hero');
@@ -162,6 +182,7 @@ function initCountdown() {
 /* ---------- boot ---------- */
 initReveal();
 initPetals();
+initTwinkles();
 initHeroPause();
 initLightbox();
 initCountdown();

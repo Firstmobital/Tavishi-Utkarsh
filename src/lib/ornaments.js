@@ -3,7 +3,7 @@
  * They are emitted once as an SVG sprite (<symbol>s) and referenced with <use>.
  */
 
-const C = {
+export const C = {
   stem: '#6B4A2B',
   leaf: '#0F3D2E',
   leaf2: '#2F6B4E',
@@ -19,24 +19,51 @@ const C = {
 const LEAF = 'M0 0C5-5.5 14-6 21 0C14 6 5 5.5 0 0Z';
 const BRACT = 'M0 0C-6.5-2.5-9-11-2.6-16.5Q0-18.4 2.6-16.5C9-11 6.5-2.5 0 0Z';
 
-const leaf = ([x, y, a, s = 1, c = C.leaf]) =>
-  `<g transform="translate(${x} ${y}) rotate(${a}) scale(${s})"><path d="${LEAF}" fill="${c}"/><path d="M1 0H17" stroke="${C.cream}" stroke-opacity=".35" stroke-width=".6"/></g>`;
+const n1 = (v) => Math.round(v * 10) / 10;
+const n2 = (v) => Math.round(v * 100) / 100;
+const xf = (x, y, a, sc) => `translate(${n1(x)} ${n1(y)})${a ? ` rotate(${Math.round(a)})` : ''} scale(${n2(sc)})`;
 
-/** A bougainvillea cluster: three papery bracts with tiny cream florets. */
-const cluster = ([x, y, rot = 0, s = 1, tone = 0]) => {
-  const fills = [
-    [C.rose, C.rose2, C.pink],
-    [C.rose2, C.pink, C.blush],
-    [C.pink, C.blush, C.rose2],
-  ][tone];
-  const bracts = [0, 120, 240]
+/* Shared shapes, defined once in the sprite and reused with <use> (keeps the HTML small). */
+const LEAF_COLORS = [C.leaf, C.leaf2, '#1C4A38'];
+const CLUSTER_FILLS = [
+  [C.rose, C.rose2, C.pink],
+  [C.rose2, C.pink, C.blush],
+  [C.pink, C.blush, C.rose2],
+];
+function shapeDefs() {
+  const leaves = LEAF_COLORS.map(
+    (c, i) =>
+      `<g id="ol${i}"><path d="${LEAF}" fill="${c}"/><path d="M1 0H17" stroke="${C.cream}" stroke-opacity=".35" stroke-width=".6"/></g>`,
+  ).join('');
+  const clusters = CLUSTER_FILLS.map((fills, t) => {
+    const bracts = [0, 120, 240]
+      .map(
+        (a, i) =>
+          `<g transform="rotate(${a})"><path d="${BRACT}" fill="${fills[i]}" stroke="#8E1B47" stroke-opacity=".35" stroke-width=".5"/><path d="M0-2V-13M0-7l-3-3M0-9l3-3" stroke="#8E1B47" stroke-opacity=".28" stroke-width=".45" fill="none"/></g>`,
+      )
+      .join('');
+    return `<g id="oc${t}">${bracts}<circle r="1.6" cy="-1" fill="${C.cream}"/><circle r="1.2" cx="1.8" cy="1.2" fill="${C.cream}"/><circle r="1.2" cx="-1.8" cy="1.2" fill="${C.cream}"/></g>`;
+  }).join('');
+  const roses = ['#FBF1EC', '#F6D3DA']
     .map(
-      (a, i) =>
-        `<g transform="rotate(${a})"><path d="${BRACT}" fill="${fills[i]}" stroke="#8E1B47" stroke-opacity=".35" stroke-width=".5"/><path d="M0-2V-13M0-7l-3-3M0-9l3-3" stroke="#8E1B47" stroke-opacity=".28" stroke-width=".45" fill="none"/></g>`,
+      (fill, i) =>
+        `<g id="or${i}"><circle r="1" fill="${fill}"/><path d="M-.55 .1a.55 .5 0 1 1 .6 .4M-.15 -.1a.25 .25 0 1 1 .3 .2" fill="none" stroke="#C99A92" stroke-opacity=".55" stroke-width=".13"/></g>`,
     )
     .join('');
-  return `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${s})">${bracts}<circle r="1.6" cy="-1" fill="${C.cream}"/><circle r="1.2" cx="1.8" cy="1.2" fill="${C.cream}"/><circle r="1.2" cx="-1.8" cy="1.2" fill="${C.cream}"/></g>`;
+  return leaves + clusters + roses;
+}
+
+export const leaf = ([x, y, a, s = 1, c = C.leaf]) => {
+  const i = Math.max(0, LEAF_COLORS.indexOf(c));
+  return `<use href="#ol${i}" transform="${xf(x, y, a, s)}"/>`;
 };
+
+/** A bougainvillea cluster: three papery bracts with tiny cream florets. */
+export const cluster = ([x, y, rot = 0, s = 1, tone = 0]) =>
+  `<use href="#oc${tone}" transform="${xf(x, y, rot, s)}"/>`;
+
+/** Garden rose (white or blush). */
+export const rose = (x, y, r, blush = false) => `<use href="#or${blush ? 1 : 0}" transform="${xf(x, y, 0, r)}"/>`;
 
 /** Corner sprig of bougainvillea — grows from the top-left corner (0,0). */
 function sprig() {
@@ -113,6 +140,23 @@ function lotus() {
   </symbol>`;
 }
 
+/** Hanging strand of bougainvillea and jasmine buds ending in a gold tassel. */
+function strandSymbol() {
+  let beads = '';
+  for (let i = 0, y = 8; y < 180; i++, y += 9) {
+    beads +=
+      i % 4 === 3
+        ? `<ellipse cx="10" cy="${y}" rx="2.6" ry="3.6" fill="#FFF8EC"/>`
+        : cluster([10, y, (i * 47) % 120, 0.34, i % 3]);
+    if (i % 5 === 2) beads += leaf([10, y + 3, i % 2 ? 30 : 150, 0.45, C.leaf2]);
+  }
+  return `<symbol id="o-strand" viewBox="0 0 20 200" preserveAspectRatio="xMidYMin meet">
+    <path d="M10 0V184" stroke="#C9A45C" stroke-width=".8"/>
+    ${beads}
+    <path d="M6 184h8l-2 4h-4z" fill="#C9A45C"/><path d="M8 188h4l1 10h-6z" fill="#B08D57"/>
+  </symbol>`;
+}
+
 /** Finial above an arch apex: a small bud on a stem. */
 function finial() {
   return `<symbol id="o-finial" viewBox="0 0 24 30">
@@ -142,7 +186,7 @@ function icons() {
 }
 
 export function sprite() {
-  return `<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><defs>${sprig()}${cornerFloral()}${lotus()}${finial()}${icons()}</defs></svg>`;
+  return `<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><defs>${shapeDefs()}${sprig()}${cornerFloral()}${lotus()}${finial()}${strandSymbol()}${icons()}</defs></svg>`;
 }
 
 export const use = (id, cls = '', extra = '') =>

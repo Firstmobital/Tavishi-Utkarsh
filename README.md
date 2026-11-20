@@ -3,15 +3,16 @@
 A mobile-first, single-page digital wedding invitation built with **Vite + vanilla HTML/CSS/JS**.
 The page is rendered at build time from one content file, so it ships as plain static HTML (fast on low-end phones, works without JavaScript).
 
-The décor is shown only as **original SVG illustrations** inspired by its themes (gold birdcage dome, bougainvillea, emerald lattice, fairy lights, a Rajasthani palace skyline). No venue photos are used or deployed, so the real setting stays a surprise. Each event card's illustration is picked with `art: 'dome' | 'mandap' | 'lanterns'` in `src/content.js`.
+On first visit, guests see a pair of carved palace doors. Tapping them swings the doors open, starts the music and reveals the invite. A reload in the same tab skips the doors.
 
 ## Edit the content
 
-Everything (names, dates, timings, venues, map links, hashtag, RSVP contacts, family lists, countdown date) lives in **`src/content.js`**. Edit it and save. The dev server reloads automatically.
+Everything (names, dates, timings, venues, map links, hashtag, RSVP contacts, family lists, countdown date, photo choices) lives in **`src/content.js`**. Edit it and save. The dev server reloads automatically.
 
+- **`SHOW_VENUE_RENDERS`** (top of the file): `true` shows the real venue renders (cover photo, event-card windows, "The Setting" gallery, closing photo, desktop backdrop). Set it to `false` to keep the décor a surprise. The Setting section is then hidden, and emerald and gold panels replace the photos.
 - Map links set to `MAP_LINK_PLACEHOLDER` hide their **View Location** button.
-- A WhatsApp number that still contains `XXXX` hides the **RSVP on WhatsApp** button.
-- **Music:** drop an MP3 at `public/audio/music.mp3`. The floating music button only appears when that file exists. It never autoplays.
+- While the WhatsApp number is a placeholder, the **RSVP on WhatsApp** button is shown disabled, and the browser console warns about any placeholder RSVP details.
+- **Music:** drop an MP3 at `public/audio/music.mp3`. It starts when the doors are tapped (the tap is the gesture browsers require). If the file is missing, the audio is skipped silently and the music button stays hidden.
 
 ## Local development
 
@@ -35,13 +36,30 @@ npm run build
 npm run preview
 ```
 
-### Regenerating images
+### Images
 
-The social preview (`public/og-image.jpg`), favicon and responsive couple-photo variants (`*-480/800.webp`) are generated with `sharp` and committed. Re-run this after changing the couple's names or replacing photos in `public/images/couple/`:
+Full-resolution originals live in **`assets/images/`** (`couple/`, `venue/`). They are *not* deployed. `npm run generate:assets` builds everything the site serves:
+
+- responsive WebP sizes in `public/images/` (couple 640/1080/1600w, venue 640/1080w, never upscaled)
+- a portrait hero crop of the floral dome and the pre-blurred desktop `backdrop.webp`
+- `src/generated/images.js`, the manifest `render.js` uses for `srcset`/`sizes` and intrinsic width/height
+- the 1200×630 `og-image.jpg` share preview and the favicon
+
+To add or replace a photo, put the original in `assets/images/…`, reference it in `content.js` by key (e.g. `'couple/couple-portrait'`), and run:
 
 ```bash
 npm run generate:assets
 ```
+
+### Visual QA screenshots
+
+With `npm run preview` running in another terminal, this screenshots every section (and the door intro) at 390×844 and 1440×900 into `screenshots/`:
+
+```bash
+npm run screenshots
+```
+
+Playwright is a dev dependency. If its browser isn't installed, point it at an existing Chromium with `CHROME_PATH=/path/to/chrome`.
 
 ## Deploy on Vercel
 
@@ -54,24 +72,27 @@ npm run generate:assets
    - **Install Command:** `npm install` (default)
 4. Click **Deploy**.
 
-`vercel.json` only adds cache headers (hashed JS/CSS cached forever, images for a day).
+`vercel.json` only adds cache headers (hashed JS/CSS forever, fonts for 30 days, images for a day).
 
 ### Link previews (WhatsApp, etc.)
 
-The `og:image` tag must be an absolute URL. At build time it is taken from Vercel's production domain (`VERCEL_PROJECT_PRODUCTION_URL`) automatically. If you add a custom domain and the preview does not show, set `meta.siteUrl` in `src/content.js` (e.g. `https://tavishiwedsutkarsh.com`) and redeploy. WhatsApp caches previews, so test with a fresh link (e.g. add `?v=2`).
+The `og:image` tag must be an absolute URL. At build time it is taken from Vercel's production domain (`VERCEL_PROJECT_PRODUCTION_URL`) automatically. If you add a custom domain and the preview does not show, set `meta.siteUrl` in `src/content.js` and redeploy. WhatsApp caches previews, so test with a fresh link (e.g. add `?v=2`).
 
 ## Project structure
 
 ```
-index.html              shell; content is injected at build time
-vite.config.js          plugin that renders src/content.js into index.html
-src/content.js          ← all text and details
-src/render.js           markup templates (pure functions)
-src/lib/arch.js         scalloped jharokha arch generator (SVG paths)
-src/lib/ornaments.js    hand-drawn SVG ornaments (bougainvillea, lotus, icons)
-src/lib/scenes.js       illustrated scenes (hero night garden, event vignettes, pergola, gazebo)
-src/style.css           styles and animations
-src/main.js             reveal-on-scroll, petals, music, lightbox, countdown
-scripts/generate-assets.mjs   OG image, favicon and image variants (sharp)
-public/                 static files (couple photos, og-image.jpg, favicon)
+index.html                 shell; content is injected at build time
+vite.config.js             plugin that renders src/content.js into index.html
+src/content.js             ← all text, details and photo choices
+src/render.js              markup templates (pure functions)
+src/generated/images.js    image manifest (generated)
+src/lib/arch.js            scalloped jharokha arch generator (SVG paths)
+src/lib/doors.js           carved palace doors for the opening (SVG)
+src/lib/ornaments.js       lotus, filigree, finial and icons (SVG sprite)
+src/style.css              design system, sections and motion
+src/main.js                doors, reveals, parallax, timeline, carousel, countdown, music, Lenis
+assets/images/             full-resolution originals (not deployed)
+public/                    served files: optimised images, self-hosted fonts, og-image, favicon
+scripts/generate-assets.mjs   image pipeline (sharp)
+scripts/screenshots.mjs       Playwright visual QA
 ```

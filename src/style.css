@@ -640,8 +640,31 @@ html.lenis body {
   width: 50%;
   z-index: 1;
   backface-visibility: hidden;
-  background: url('/images/texture/velvet.webp') 0 0 / 256px 256px #102b1a;
+  background: #262c24;
   transition: transform 1.5s var(--ease-door) 0.1s;
+}
+
+/* one debossed-lotus panel spans both doors, so the artwork runs across the seam */
+.doors__clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.doors__tex {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 200%;
+  background: url('/images/texture/lotus-panel.webp') center / cover no-repeat;
+}
+
+.doors__leaf--l .doors__tex {
+  left: 0;
+}
+
+.doors__leaf--r .doors__tex {
+  right: 0;
 }
 
 /* soft light falloff across each panel + the fold at the seam */
@@ -649,6 +672,7 @@ html.lenis body {
   content: '';
   position: absolute;
   inset: 0;
+  z-index: 1;
   pointer-events: none;
 }
 
@@ -660,7 +684,7 @@ html.lenis body {
 
 .doors__leaf--l::before {
   background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.32) 0%, rgba(255, 255, 255, 0.025) 45%, rgba(0, 0, 0, 0.1) 88%, rgba(0, 0, 0, 0.55) 100%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.2) 0%, rgba(255, 255, 255, 0.02) 45%, rgba(0, 0, 0, 0.08) 90%, rgba(0, 0, 0, 0.5) 100%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(0, 0, 0, 0.18));
   box-shadow: inset -1px 0 0 rgba(120, 170, 130, 0.12);
 }
@@ -668,12 +692,11 @@ html.lenis body {
 .doors__leaf--r {
   right: 0;
   transform-origin: 100% 50%;
-  background-position: 128px 64px;
 }
 
 .doors__leaf--r::before {
   background:
-    linear-gradient(270deg, rgba(0, 0, 0, 0.32) 0%, rgba(255, 255, 255, 0.025) 45%, rgba(0, 0, 0, 0.12) 88%, rgba(0, 0, 0, 0.5) 100%),
+    linear-gradient(270deg, rgba(0, 0, 0, 0.2) 0%, rgba(255, 255, 255, 0.02) 45%, rgba(0, 0, 0, 0.1) 90%, rgba(0, 0, 0, 0.45) 100%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(0, 0, 0, 0.18));
   box-shadow: inset 1px 0 0 rgba(120, 170, 130, 0.1);
 }

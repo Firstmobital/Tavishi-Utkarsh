@@ -139,8 +139,8 @@ function doors(c) {
   <div class="doors" role="dialog" aria-modal="true" aria-label="Wedding invitation">
     <div class="doors__stage">
       <div class="doors__bloom" aria-hidden="true"></div>
-      <div class="doors__leaf doors__leaf--l"><span class="doors__seal-wrap">${seal(d.monogram)}</span></div>
-      <div class="doors__leaf doors__leaf--r"></div>
+      <div class="doors__leaf doors__leaf--l"><span class="doors__clip"><span class="doors__tex"></span></span><span class="doors__seal-wrap">${seal(d.monogram)}</span></div>
+      <div class="doors__leaf doors__leaf--r"><span class="doors__clip"><span class="doors__tex"></span></span></div>
       <button type="button" class="doors__open">
         <span class="doors__prompt">${esc(d.prompt)}</span>
         <span class="visually-hidden"> — open the wedding invitation of ${esc(c.couple.bride)} and ${esc(c.couple.groom)}</span>

@@ -239,7 +239,10 @@ async function art() {
       .webp({ quality: 68, effort: 6 })
       .toFile(out(`cover-lamps-${w}.webp`));
   }
-  for (const f of ['hero-arch.jpg', 'lotus-emboss.webp', 'lantern-arch.webp', 'lotus-border.jpg']) {
+  // haveli arch: the drawing's opening is centred at x≈359, not the image centre
+  // (368), so crop it symmetrically around the arch (718px wide) before use
+  await sharp(src('hero-arch.jpg')).extract({ left: 0, top: 0, width: 718, height: 1308 }).jpeg({ quality: 86, mozjpeg: true }).toFile(out('hero-arch.jpg'));
+  for (const f of ['lotus-emboss.webp', 'lantern-arch.webp', 'lotus-border.jpg']) {
     const { size } = await stat(src(f));
     if (size <= 300 * 1024) {
       await writeFile(out(f), await readFile(src(f)));

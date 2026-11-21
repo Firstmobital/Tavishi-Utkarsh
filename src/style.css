@@ -939,10 +939,10 @@ html.lenis body {
    and the windows, peacock, garden and couple (bottom 728px) stay intact,
    while a band of plain pillar between them stretches to fit the text. */
 .scene {
-  --s: calc(var(--colw) / 736);
+  --s: calc(var(--colw) / 718); /* artwork cropped symmetric around the arch */
   border-style: solid;
-  border-width: calc(490 * var(--s)) calc(116 * var(--s)) calc(728 * var(--s)) calc(110 * var(--s));
-  border-image-slice: 490 116 728 110 fill;
+  border-width: calc(490 * var(--s)) calc(104 * var(--s)) calc(728 * var(--s));
+  border-image-slice: 490 104 728 fill;
   border-image-repeat: stretch;
   border-image-source: none;
   text-align: center;

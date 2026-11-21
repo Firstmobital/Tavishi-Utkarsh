@@ -251,8 +251,15 @@ html.lenis body {
   --heading: var(--maroon);
   --label: var(--gold-deep);
   --line: var(--gold-2);
-  background: #faf5e4 url('/images/art/paper.webp') center / cover;
+  background: #faf5e4 center / cover;
   color: var(--text);
+}
+
+/* Artwork backgrounds load only when their section is near (main.js adds
+   .is-near after the gate opens), so they never compete with the hero. */
+.theme-paper.is-near,
+html:not(.js) .theme-paper {
+  background-image: url('/images/art/paper.webp');
 }
 
 .theme-maroon,
@@ -1172,7 +1179,14 @@ html.lenis body {
   --s: calc(var(--colw) / 1125);
   border-style: solid;
   border-width: calc(700 * var(--s)) calc(150 * var(--s)) calc(710 * var(--s));
-  border-image: url('/images/art/mughal-arch.webp') 700 150 710 fill round;
+  border-image-slice: 700 150 710 fill;
+  border-image-repeat: round;
+  border-image-source: none;
+}
+
+.section--invite.is-near .mughal,
+html:not(.js) .mughal {
+  border-image-source: url('/images/art/mughal-arch.webp');
 }
 
 .mughal__content {
@@ -1979,7 +1993,12 @@ html.lenis body {
 .section--countdown {
   min-height: calc(var(--colw) * 2000 / 1125);
   padding: calc(var(--colw) * 0.53) calc(var(--colw) * 0.13) var(--space-8);
-  background: #431a1a url('/images/art/lantern-arch.webp') top center / 100% auto no-repeat;
+  background: #431a1a top center / 100% auto no-repeat;
+}
+
+.section--countdown.is-near,
+html:not(.js) .section--countdown {
+  background-image: url('/images/art/lantern-arch.webp');
 }
 
 .countdown__text {
@@ -2065,7 +2084,12 @@ html.lenis body {
   min-height: calc(var(--colw) * 1308 / 736);
   overflow: hidden;
   text-align: center;
-  background: #420b0f url('/images/art/lotus-border.jpg') left top / cover no-repeat;
+  background: #420b0f left top / cover no-repeat;
+}
+
+.closing.is-near,
+html:not(.js) .closing {
+  background-image: url('/images/art/lotus-border.jpg');
 }
 
 /* the sign-off sits on the plain velvet, beside the lotus vine */

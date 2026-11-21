@@ -76,6 +76,29 @@ function initReveal() {
 }
 
 /* ==========================================================
+   Artwork backgrounds: start loading once the gate is open (or after
+   page load when it's skipped), and only as each section nears view.
+   ========================================================== */
+let artStarted = false;
+function startArt() {
+  if (artStarted) return;
+  artStarted = true;
+  const els = $$('[data-art]');
+  if (!hasIO) return els.forEach((el) => el.classList.add('is-near'));
+  const io = new IntersectionObserver(
+    (entries) =>
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('is-near');
+          io.unobserve(e.target);
+        }
+      }),
+    { rootMargin: '900px 0px' },
+  );
+  els.forEach((el) => io.observe(el));
+}
+
+/* ==========================================================
    Opening doors (first visit in this tab)
    ========================================================== */
 const audio = { el: null };
@@ -151,6 +174,8 @@ function initDoors() {
   const main = $('#top');
   if (!doors || !root.classList.contains('doors-up')) {
     doors?.remove();
+    if (document.readyState === 'complete') startArt();
+    else window.addEventListener('load', startArt, { once: true });
     const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 1200));
     idle(() => startMusic(false));
     return;
@@ -166,6 +191,7 @@ function initDoors() {
     if (opened) return;
     opened = true;
     startMusic(true); // the tap / Skip click is the user gesture audio needs
+    startArt();
     try {
       sessionStorage.setItem('tu-doors', '1');
     } catch {

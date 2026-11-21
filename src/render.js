@@ -195,7 +195,7 @@ function invitation(c) {
   return {
     theme: 'mughal',
     html: `
-  <section class="section--invite" id="invitation" aria-labelledby="invite-title">
+  <section class="section--invite" data-art id="invitation" aria-labelledby="invite-title">
     <h2 class="visually-hidden" id="invite-title">Wedding invitation</h2>
     <div class="mughal">
       <div class="mughal__content">
@@ -431,7 +431,7 @@ function family(c) {
   return {
     theme: 'paper',
     html: `
-  <section class="section theme-paper section--family" id="family" aria-labelledby="family-title">
+  <section class="section theme-paper section--family" data-art id="family" aria-labelledby="family-title">
     <img class="family__flower" src="/images/art/banana-flower.webp" alt="" width="475" height="500" loading="lazy" decoding="async">
     ${sectionHead(f.eyebrow, f.title, '', 'family-title')}
     <div class="family">${groups}</div>
@@ -486,7 +486,7 @@ function countdown(c) {
   return {
     theme: 'maroon',
     html: `
-  <section class="section theme-maroon section--countdown" id="countdown" aria-labelledby="countdown-title">
+  <section class="section theme-maroon section--countdown" data-art id="countdown" aria-labelledby="countdown-title">
     <div class="countdown" data-target="${esc(k.target)}">
       <h2 class="script-title reveal reveal--script" id="countdown-title">${esc(k.title)}</h2>
       <div class="reveal">${divider('divider--light')}</div>
@@ -504,7 +504,7 @@ function closing(c) {
   return {
     theme: 'velvet',
     html: `
-  <section class="closing theme-velvet" aria-label="Closing note">
+  <section class="closing theme-velvet" data-art aria-label="Closing note">
     <div class="closing__text">
       <p class="closing__signoff foil reveal reveal--script" data-text="${esc(x.signoff)}">${esc(x.signoff)}</p>
       <div class="reveal">${divider('divider--light divider--small')}</div>

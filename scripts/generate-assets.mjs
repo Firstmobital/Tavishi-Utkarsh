@@ -231,12 +231,57 @@ async function favicon(script, caps) {
   await sharp(Buffer.from(svg), { density: 600 }).resize(180, 180).png().toFile(pub('apple-touch-icon.png'));
 }
 
+/* ---------- felt / velvet paper texture for the opening gatefold ---------- */
+// A seamless tile of short curly fibres over a deep green base, with fine
+// grain on top. Fibres that cross an edge are drawn again on the opposite
+// side, so the tile repeats without seams.
+async function velvet() {
+  const T = 512;
+  let seed = 20270115;
+  const rand = () => {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 4294967296;
+  };
+  const fibres = [];
+  for (let i = 0; i < 6500; i++) {
+    const x = rand() * T;
+    const y = rand() * T;
+    const len = 3 + rand() * 9;
+    const a = rand() * Math.PI * 2;
+    const bend = (rand() - 0.5) * 2.2;
+    const x2 = x + Math.cos(a) * len;
+    const y2 = y + Math.sin(a) * len;
+    const cx = (x + x2) / 2 + Math.cos(a + Math.PI / 2) * len * bend * 0.5;
+    const cy = (y + y2) / 2 + Math.sin(a + Math.PI / 2) * len * bend * 0.5;
+    const light = rand() < 0.55;
+    const col = light ? `rgba(58,100,64,${(0.18 + rand() * 0.2).toFixed(2)})` : `rgba(5,18,10,${(0.32 + rand() * 0.3).toFixed(2)})`;
+    const w = (0.45 + rand() * 0.6).toFixed(2);
+    const d = (ox, oy) => `M${(x + ox).toFixed(1)} ${(y + oy).toFixed(1)}Q${(cx + ox).toFixed(1)} ${(cy + oy).toFixed(1)} ${(x2 + ox).toFixed(1)} ${(y2 + oy).toFixed(1)}`;
+    for (const ox of [-T, 0, T]) for (const oy of [-T, 0, T]) {
+      if (ox && (x + ox > T + 20 || x + ox < -20)) continue;
+      if (oy && (y + oy > T + 20 || y + oy < -20)) continue;
+      fibres.push(`<path d="${d(ox, oy)}" stroke="${col}" stroke-width="${w}"/>`);
+    }
+  }
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${T}" height="${T}">
+    <filter id="g"><feTurbulence type="fractalNoise" baseFrequency=".75" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 .25  0 0 0 0 .4  0 0 0 0 .27  0 0 0 .14 0"/></filter>
+    <filter id="m"><feTurbulence type="fractalNoise" baseFrequency=".012" numOctaves="2" stitchTiles="stitch" seed="4"/><feColorMatrix values="0 0 0 0 .08  0 0 0 0 .2  0 0 0 0 .1  0 0 0 .16 0"/></filter>
+    <rect width="${T}" height="${T}" fill="#102B1A"/>
+    <rect width="${T}" height="${T}" filter="url(#m)"/>
+    <g fill="none" stroke-linecap="round">${fibres.join('')}</g>
+    <rect width="${T}" height="${T}" filter="url(#g)"/>
+  </svg>`;
+  await mkdir(pub('images/texture'), { recursive: true });
+  await sharp(Buffer.from(svg)).linear([0.98, 0.92, 0.91], [0, 0, 0]).webp({ quality: 90, smartSubsample: true }).toFile(pub('images/texture/velvet.webp'));
+}
+
 const [script, caps] = await Promise.all([
   loadFont('PinyonScript-Regular.ttf'),
   loadFont('Cinzel-Medium.ttf'),
 ]);
 await variants();
 await hero();
+await velvet();
 await writeManifest();
 await ogImage(script, caps);
 await favicon(script, caps);

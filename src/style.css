@@ -638,46 +638,71 @@ html.lenis body {
   top: 0;
   bottom: 0;
   width: 50%;
+  z-index: 1;
   backface-visibility: hidden;
-  transition: transform 1.4s var(--ease-door) 0.38s;
+  background: url('/images/texture/velvet.webp') 0 0 / 256px 256px #102b1a;
+  transition: transform 1.5s var(--ease-door) 0.1s;
 }
 
-/* velvet nap: the static card-stock grain, a touch stronger */
-.doors__leaf::after {
+/* soft light falloff across each panel + the fold at the seam */
+.doors__leaf::before {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: var(--grain);
-  opacity: 0.16;
   pointer-events: none;
 }
 
 .doors__leaf--l {
   left: 0;
+  z-index: 2; /* above the right panel, so the seal can overlap the seam */
   transform-origin: 0 50%;
-  box-shadow: inset -14px 0 22px -14px rgba(0, 0, 0, 0.7);
+}
+
+.doors__leaf--l::before {
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.32) 0%, rgba(255, 255, 255, 0.025) 45%, rgba(0, 0, 0, 0.1) 88%, rgba(0, 0, 0, 0.55) 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(0, 0, 0, 0.18));
+  box-shadow: inset -1px 0 0 rgba(120, 170, 130, 0.12);
 }
 
 .doors__leaf--r {
   right: 0;
   transform-origin: 100% 50%;
-  box-shadow: inset 14px 0 22px -14px rgba(0, 0, 0, 0.7);
+  background-position: 128px 64px;
 }
 
-.doors__art {
+.doors__leaf--r::before {
+  background:
+    linear-gradient(270deg, rgba(0, 0, 0, 0.32) 0%, rgba(255, 255, 255, 0.025) 45%, rgba(0, 0, 0, 0.12) 88%, rgba(0, 0, 0, 0.5) 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(0, 0, 0, 0.18));
+  box-shadow: inset 1px 0 0 rgba(120, 170, 130, 0.1);
+}
+
+/* the seal is pinned over the seam on the left panel and swings with it */
+.doors__seal-wrap {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  z-index: 2;
+  width: 150px;
+  transform: translate(50%, -62%);
+}
+
+.doors__seal {
   width: 100%;
-  height: 100%;
+  height: auto;
+  filter: drop-shadow(5px 12px 10px rgba(0, 0, 0, 0.55)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
 }
 
 .doors__open {
   position: absolute;
   inset: 0;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-5);
-  padding: 0;
+  padding: 220px 0 0;
   border: 0;
   background: none;
   color: var(--gold-light);
@@ -687,43 +712,18 @@ html.lenis body {
   outline: none;
 }
 
-.doors__open:focus-visible .doors__seal {
-  outline: 2px solid var(--gold-light);
+.doors__open:focus-visible .doors__prompt {
+  outline: 1px solid var(--gold-light);
   outline-offset: 8px;
-  border-radius: 50%;
-}
-
-.doors__seal-wrap {
-  display: block;
-  transition:
-    transform 0.6s var(--ease-out),
-    opacity 0.5s ease;
-}
-
-.doors__seal {
-  width: 150px;
-  height: auto;
-  filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.55)) drop-shadow(0 2px 3px rgba(0, 0, 0, 0.4));
-  animation: breathe 4.5s ease-in-out infinite;
-}
-
-@keyframes breathe {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.025);
-  }
 }
 
 .doors__prompt {
   font-family: var(--f-caps);
-  font-size: 11.5px;
+  font-size: 11px;
   letter-spacing: 0.34em;
   padding-left: 0.34em;
   text-transform: uppercase;
-  color: var(--gold-light);
+  color: var(--cream);
   animation: glow 3s ease-in-out infinite;
   transition: opacity 0.4s ease;
 }
@@ -731,36 +731,32 @@ html.lenis body {
 @keyframes glow {
   0%,
   100% {
-    opacity: 0.55;
+    opacity: 0.5;
   }
   50% {
-    opacity: 1;
+    opacity: 0.95;
   }
 }
 
 .doors__skip {
   position: absolute;
-  top: calc(18px + env(safe-area-inset-top));
-  right: 18px;
-  min-height: 34px;
-  padding: 0 14px;
-  border: 1px solid rgba(232, 207, 154, 0.55);
-  border-radius: 2px;
-  background: rgba(4, 20, 15, 0.35);
+  top: calc(16px + env(safe-area-inset-top));
+  right: 16px;
+  z-index: 4;
+  min-height: 32px;
+  padding: 0 13px;
+  border: 1px solid rgba(243, 230, 207, 0.6);
+  border-radius: 0;
+  background: transparent;
   font-family: var(--f-caps);
-  font-size: 10.5px;
+  font-size: 10px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--cream);
   transition: opacity 0.3s ease;
 }
 
-/* opening: the seal lifts away, then the panels swing open */
-.doors.is-opening .doors__seal-wrap {
-  transform: translateY(-16px) scale(1.14);
-  opacity: 0;
-}
-
+/* opening: both panels swing OUTWARD, toward the guest */
 .doors.is-opening .doors__prompt,
 .doors.is-opening .doors__skip {
   animation: none;
@@ -768,11 +764,11 @@ html.lenis body {
 }
 
 .doors.is-opening .doors__leaf--l {
-  transform: rotateY(105deg);
+  transform: rotateY(-100deg);
 }
 
 .doors.is-opening .doors__leaf--r {
-  transform: rotateY(-105deg);
+  transform: rotateY(100deg);
 }
 
 .doors.is-opening .doors__bloom {
@@ -2327,9 +2323,7 @@ html.lenis body {
     display: none;
   }
 
-  .doors.is-opening .doors__seal-wrap {
-    transform: none;
-  }
+
 
   .js .reveal,
   .js .reveal--script,

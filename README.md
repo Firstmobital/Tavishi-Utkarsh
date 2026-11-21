@@ -3,7 +3,7 @@
 A mobile-first, single-page digital wedding invitation built with **Vite + vanilla HTML/CSS/JS**.
 The page is rendered at build time from one content file, so it ships as plain static HTML (fast on low-end phones, works without JavaScript).
 
-On first visit, guests see an emerald velvet gatefold sealed with a lace-edged "T & U" monogram. Tapping the seal lifts it away, swings the panels open, starts the music and reveals the invite (a **Skip** button opens it instantly). A reload in the same tab skips the opening.
+On first visit, guests see a felt-green gatefold sealed with a diamond lace "T U" monogram. Tapping it swings both panels open toward the guest (the seal rides away on the left panel), starts the music and reveals the invite (a **Skip** button opens it instantly). A reload in the same tab skips the opening.
 
 ## Edit the content
 

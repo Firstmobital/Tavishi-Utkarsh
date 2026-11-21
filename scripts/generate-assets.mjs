@@ -248,10 +248,61 @@ async function art() {
       await sharp(src(f)).webp({ quality: 82 }).toFile(out(f));
     }
   }
+  // Woven canvas from inside the Mughal arch, mirrored 2x2 into a seamless tile
+  {
+    // high-pass: keep the weave, drop the faint paisley so mirroring shows no pattern
+    const crop = sharp(src('mughal-arch.webp')).extract({ left: 230, top: 760, width: 660, height: 490 }).removeAlpha();
+    const { data, info } = await crop.clone().raw().toBuffer({ resolveWithObject: true });
+    const low = await crop.clone().blur(18).raw().toBuffer();
+    const mean = [235, 233, 228];
+    const hp = Buffer.alloc(data.length);
+    for (let i = 0; i < data.length; i++) hp[i] = Math.max(0, Math.min(255, data[i] - low[i] + mean[i % 3]));
+    // seamless tile by cross-fading opposite edges (no mirroring, so the weave stays natural)
+    const B = 70;
+    const W0 = info.width;
+    const H0 = info.height;
+    const TW = W0 - B;
+    const TH = H0 - B;
+    const px = (x, y, k) => hp[(y * W0 + x) * 3 + k];
+    const tile = Buffer.alloc(TW * TH * 3);
+    for (let y = 0; y < TH; y++) {
+      for (let x = 0; x < TW; x++) {
+        const ax = x < B ? x / B : 1; // weight of the main pixel vs. its wrap partner
+        const ay = y < B ? y / B : 1;
+        for (let k = 0; k < 3; k++) {
+          const v00 = px(x, y, k);
+          const v10 = x < B ? px(x + TW, y, k) : v00;
+          const v01 = y < B ? px(x, y + TH, k) : v00;
+          const v11 = x < B && y < B ? px(x + TW, y + TH, k) : x < B ? v10 : v01;
+          const top = v00 * ax + v10 * (1 - ax);
+          const bot = v01 * ax + v11 * (1 - ax);
+          tile[(y * TW + x) * 3 + k] = Math.round(top * ay + bot * (1 - ay));
+        }
+      }
+    }
+    await sharp(tile, { raw: { width: TW, height: TH, channels: 3 } }).webp({ quality: 72 }).toFile(out('canvas.webp'));
+  }
   const paper = src('paper-garden.webp');
-  await sharp(paper).extract({ left: 0, top: 0, width: 620, height: 1000 }).webp({ quality: 80 }).toFile(out('paper.webp'));
-  await sharp(paper).extract({ left: 650, top: 280, width: 475, height: 500 }).webp({ quality: 82 }).toFile(out('banana-flower.webp'));
-  await sharp(paper).extract({ left: 0, top: 1040, width: 1125, height: 960 }).webp({ quality: 82 }).toFile(out('garden-strip.webp'));
+  // cut the drawn elements out of the paper (colour key on the paper tone)
+  const cutout = async (region, file) => {
+    const { data, info } = await sharp(paper).extract(region).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+    const rgba = Buffer.alloc(info.width * info.height * 4);
+    for (let i = 0, j = 0; i < data.length; i += 3, j += 4) {
+      // distance to the paper's tone range, light (249,241,221) to warm (236,220,184)
+      const A = [249, 241, 221];
+      const D = [-13, -21, -37];
+      const v = [data[i] - A[0], data[i + 1] - A[1], data[i + 2] - A[2]];
+      const t = Math.max(0, Math.min(1, (v[0] * D[0] + v[1] * D[1] + v[2] * D[2]) / (D[0] ** 2 + D[1] ** 2 + D[2] ** 2)));
+      const d = Math.hypot(v[0] - t * D[0], v[1] - t * D[1], v[2] - t * D[2]);
+      rgba[j] = data[i];
+      rgba[j + 1] = data[i + 1];
+      rgba[j + 2] = data[i + 2];
+      rgba[j + 3] = Math.max(0, Math.min(255, Math.round(((d - 13) / 26) * 255)));
+    }
+    await sharp(rgba, { raw: { width: info.width, height: info.height, channels: 4 } }).webp({ quality: 84, alphaQuality: 90 }).toFile(out(file));
+  };
+  await cutout({ left: 650, top: 280, width: 475, height: 500 }, 'banana-flower.webp');
+  await cutout({ left: 0, top: 1040, width: 1125, height: 960 }, 'garden-strip.webp');
 }
 
 const [script, caps] = await Promise.all([

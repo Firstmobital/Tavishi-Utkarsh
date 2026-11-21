@@ -53,7 +53,7 @@ npm run generate:assets
 
 ### The family's artwork
 
-Your own artwork lives in **`assets/art/`** and is used as-is: the debossed lotus on the opening gate, the Mughal arch with the peacock (the invitation, 9-sliced so the pillars stretch to fit the text), the paper garden (family section, cut into the paper, banana flower and garden strip), the lantern arch (countdown) and the lotus vine on velvet (closing). `npm run generate:assets` copies them into `public/images/art/`, re-encoding only files over 300 KB.
+Your own artwork lives in **`assets/art/`** and is used as-is: the debossed lotus on the opening gate, the Mughal arch with the peacock (the invitation, 9-sliced so the pillars stretch to fit the text), the paper garden (its banana flower and palms-and-pots strip are cut out of the paper for the family section), the woven canvas from inside the Mughal arch (tiled seamlessly as the background of every plain section), the lantern arch (countdown) and the lotus vine on velvet (closing). `npm run generate:assets` copies them into `public/images/art/`, re-encoding only files over 300 KB.
 
 ### Visual QA screenshots
 

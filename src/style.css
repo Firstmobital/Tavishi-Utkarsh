@@ -231,8 +231,14 @@ html.lenis body {
   --heading: var(--maroon);
   --label: var(--gold-deep);
   --line: var(--gold-2);
-  background: var(--ivory);
   color: var(--text);
+}
+
+/* the woven canvas from the Mughal arch artwork, on every plain section */
+.theme-ivory,
+.theme-blush,
+.theme-paper {
+  background: #ebeae5 url('/images/art/canvas.webp') 0 0 / calc(var(--colw) * 590 / 1125) auto repeat;
 }
 
 .theme-blush {
@@ -241,7 +247,6 @@ html.lenis body {
   --heading: var(--maroon);
   --label: var(--gold-deep);
   --line: var(--gold-2);
-  background: var(--blush);
   color: var(--text);
 }
 
@@ -251,15 +256,7 @@ html.lenis body {
   --heading: var(--maroon);
   --label: var(--gold-deep);
   --line: var(--gold-2);
-  background: #faf5e4 center / cover;
   color: var(--text);
-}
-
-/* Artwork backgrounds load only when their section is near (main.js adds
-   .is-near after the gate opens), so they never compete with the hero. */
-.theme-paper.is-near,
-html:not(.js) .theme-paper {
-  background-image: url('/images/art/paper.webp');
 }
 
 .theme-maroon,
@@ -283,8 +280,7 @@ html:not(.js) .theme-paper {
 }
 
 /* card-stock grain on the light sections (static, ~4%) */
-.theme-ivory::before,
-.theme-blush::before {
+.theme-none::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -1297,13 +1293,13 @@ html:not(.js) .mughal {
 
 .photo-arch__line {
   fill: none;
-  stroke: var(--gold-light);
+  stroke: var(--gold);
   stroke-width: 1.5;
   vector-effect: non-scaling-stroke;
 }
 
 .photo-arch__line--outer {
-  stroke: var(--gold);
+  stroke: var(--gold-2);
   stroke-width: 1;
 }
 
@@ -1312,11 +1308,12 @@ html:not(.js) .mughal {
 }
 
 .photo-arch__finial {
-  color: var(--gold-light);
+  color: var(--gold-2);
 }
 
 .photo-arch__names {
   margin-top: var(--space-6);
+  color: var(--gold-deep);
   font-family: var(--f-script);
   font-size: clamp(42px, 11.5vw, 52px);
   line-height: 1.2;
@@ -1398,14 +1395,14 @@ html:not(.js) .mughal {
   height: 8px;
   margin: -4px 0 0 -4px;
   border-radius: 50%;
-  border: 1px solid var(--gold-light);
+  border: 1px solid var(--gold-2);
   transition:
     transform 0.4s var(--ease-out),
     background-color 0.4s;
 }
 
 .carousel__dot[aria-current='true']::before {
-  background: var(--gold-light);
+  background: var(--gold-2);
   transform: scale(1.25);
 }
 
@@ -1853,8 +1850,6 @@ html:not(.js) .mughal {
   right: -30px;
   width: 132px;
   pointer-events: none;
-  -webkit-mask-image: radial-gradient(ellipse at 62% 50%, #000 52%, transparent 72%);
-  mask-image: radial-gradient(ellipse at 62% 50%, #000 52%, transparent 72%);
 }
 
 .family__garden {
@@ -1862,8 +1857,6 @@ html:not(.js) .mughal {
   width: calc(100% + var(--pad) * 2);
   max-width: none;
   margin: calc(var(--space-6) * -1) calc(var(--pad) * -1) 0;
-  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 18%);
-  mask-image: linear-gradient(180deg, transparent 0%, #000 18%);
   pointer-events: none;
 }
 

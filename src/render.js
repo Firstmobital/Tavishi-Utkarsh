@@ -88,10 +88,10 @@ const windowLine = archPath({ W: WINDOW.W, topH: WINDOW.top, bottom: WINDOW.H, c
 /* ---------- section dividers ---------- */
 // colour at the top of each themed section (what a divider is filled with)
 const TOP = {
-  ivory: '#FBF5EE',
+  ivory: '#EBEAE5',
   emerald: '#0F3D2E',
-  blush: '#F3D9DC',
-  paper: '#FAF5E4',
+  blush: '#EBEAE5',
+  paper: '#EBEAE5',
   maroon: '#6F1025',
   velvet: '#54111A',
 };
@@ -232,9 +232,9 @@ function meetCouple(c) {
     .map((_, i) => `<button type="button" class="carousel__dot" aria-label="Show photo ${i + 1}"${i === 0 ? ' aria-current="true"' : ''}></button>`)
     .join('');
   return {
-    theme: 'emerald',
+    theme: 'ivory',
     html: `
-  <section class="section theme-emerald section--couple" id="couple" aria-labelledby="couple-title">
+  <section class="section theme-ivory section--couple" id="couple" aria-labelledby="couple-title">
     ${sectionHead(m.eyebrow, m.title, '', 'couple-title')}
     <figure class="photo-arch">
       <div class="photo-arch__box">
@@ -248,7 +248,7 @@ function meetCouple(c) {
           <use href="#o-finial" x="${PHOTO.W / 2 - 11}" y="-30" width="22" height="28" class="photo-arch__finial"/>
         </svg>
       </div>
-      <figcaption class="photo-arch__names foil reveal reveal--script" data-text="${esc(m.names)}">${esc(m.names)}</figcaption>
+      <figcaption class="photo-arch__names reveal reveal--script">${esc(m.names)}</figcaption>
     </figure>
     <div class="carousel reveal" data-carousel>
       <ul class="carousel__track" role="list" aria-label="More photos of the couple">${slides}</ul>
@@ -553,8 +553,11 @@ export function renderBody(c) {
   let html = '';
   sections.forEach((s, i) => {
     const prev = sections[i - 1];
-    // the hero photo fades straight into the Mughal arch, so no edge there
-    if (prev && TOP[s.theme] && prev.theme !== s.theme) html += edgeBetween(prev.theme, s.theme);
+    // canvas sections flow into each other with no divider; the hero fades into
+    // the Mughal arch, whose balustrade ends it naturally
+    const light = (t) => ['ivory', 'blush', 'paper'].includes(t);
+    const skip = !prev || !TOP[s.theme] || prev.theme === s.theme || prev.theme === 'mughal' || (light(prev.theme) && light(s.theme));
+    if (!skip) html += edgeBetween(prev.theme, s.theme);
     html += s.html;
   });
 

@@ -845,32 +845,54 @@ html.lenis body {
    ========================================================== */
 .hero {
   position: relative;
-  /* exactly the artwork's proportions, so nothing is ever cropped */
-  aspect-ratio: 736 / 1308;
   overflow: hidden;
   isolation: isolate;
   background: #f6e4d6;
   color: var(--maroon);
+  --text-soft: var(--maroon-2);
 }
 
 
 
-/* the family's illustrated palace arch fills the cover; names sit in the cream opening */
-.hero__art {
-  position: absolute;
-  inset: 0;
-  z-index: -3;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% 100%;
-}
-
-.hero__content {
-  position: relative;
-  z-index: 1;
-  padding: calc(var(--colw) * 0.3) 15% 0;
+/* ONE continuous palace-arch scene (cover + invitation).
+   The illustration is 9-sliced: the arch crown (top 490px of the artwork)
+   and the windows, peacock, garden and couple (bottom 728px) stay intact,
+   while a band of plain pillar between them stretches to fit the text. */
+.scene {
+  --s: calc(var(--colw) / 736);
+  border-style: solid;
+  border-width: calc(490 * var(--s)) calc(116 * var(--s)) calc(728 * var(--s)) calc(110 * var(--s));
+  border-image: url('/images/art/hero-arch.jpg') 490 116 728 110 fill stretch;
   text-align: center;
+}
+
+/* pull the text up into the arch crown and down to just above the couple */
+.scene__content {
+  margin: calc(-269 * var(--s)) 0 calc(-250 * var(--s));
+  padding: 0 4px;
+}
+
+/* the first screen: names, date and a scroll cue; the invitation starts below the fold */
+.scene__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: calc(100svh - var(--colw) * 0.3 - 230px);
+  padding-bottom: var(--space-5);
+}
+
+.scene__invite {
+  padding-bottom: var(--space-4);
+}
+
+/* the opening is narrow, so long host names may wrap inside it */
+.scene .invite__hosts .nw {
+  white-space: normal;
+}
+
+.scene__invite .divider {
+  margin-top: 0;
+  margin-bottom: var(--space-5);
 }
 
 .hero__names {
@@ -991,16 +1013,14 @@ html.lenis body {
 }
 
 .scroll-cue {
-  position: absolute;
-  left: 50%;
-  top: calc(var(--colw) * 1.06);
+  position: relative;
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0;
-  padding: 4px 10px;
-  transform: translateX(-50%);
+  margin-top: auto;
+  padding: var(--space-4) 10px 4px;
   font-family: var(--f-caps);
   font-size: 11px;
   letter-spacing: 0.3em;
@@ -1034,6 +1054,13 @@ html.lenis body {
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
+}
+
+/* on the cover, petals fall through the first screen only */
+.hero .petals {
+  bottom: auto;
+  height: 100vh;
+  height: 100svh;
 }
 
 .petal {
@@ -1081,38 +1108,8 @@ html.lenis body {
 }
 
 /* ==========================================================
-   2. INVITATION — inside the Mughal arch artwork
-   The image is 9-sliced with border-image: the arch top and the garden
-   stay intact, and the pillars repeat to fit however long the text is.
+   2. INVITATION TEXT (set inside the cover's palace-arch scene)
    ========================================================== */
-.section--invite {
-  position: relative;
-  background: #b18d81;
-  text-align: center;
-  color: var(--maroon);
-  --text-soft: var(--maroon-2);
-}
-
-.mughal {
-  --s: calc(var(--colw) / 1125);
-  border-style: solid;
-  border-width: calc(700 * var(--s)) calc(150 * var(--s)) calc(710 * var(--s));
-  border-image-slice: 700 150 710 fill;
-  border-image-repeat: round;
-  border-image-source: none;
-}
-
-.section--invite.is-near .mughal,
-html:not(.js) .mughal {
-  border-image-source: url('/images/art/mughal-arch.webp');
-}
-
-.mughal__content {
-  margin-top: calc(-430 * var(--s));
-  margin-bottom: calc(-60 * var(--s));
-  padding: 0 var(--space-3);
-}
-
 .invocation {
   margin-bottom: var(--space-3);
   font-family: var(--f-hindi);

@@ -156,53 +156,52 @@ function doors(c) {
   </div>`;
 }
 
+/**
+ * Cover + invitation as ONE continuous scene inside the family's illustrated
+ * palace arch: names in the arch crown, the invitation flowing down through
+ * the stretched pillars, and the illustrated bride and groom at the foot.
+ */
 function hero(c) {
   const h = c.hero;
   const dt = h.date;
+  const v = c.invitation;
   return {
     theme: 'photo',
     html: `
-  <section class="hero" id="cover" aria-label="Cover">
-    <img class="hero__art" src="${esc(h.image)}" width="${h.imageSize[0]}" height="${h.imageSize[1]}" alt="${esc(h.imageAlt)}" fetchpriority="high" decoding="async">
+  <section class="hero" id="cover" aria-labelledby="cover-title">
+    <span class="visually-hidden" role="img" aria-label="${esc(h.imageAlt)}"></span>
     <div class="petals" aria-hidden="true"></div>
-    <div class="hero__content">
-      <p class="eyebrow eyebrow--light hero__in" style="--i:0">${esc(h.preface)}</p>
-      <h1 class="hero__names">
-        <span class="hero__name foil foil--deep hero__in" style="--i:1" data-text="${esc(c.couple.bride)}">${esc(c.couple.bride)}</span>
-        <span class="hero__weds hero__in" style="--i:2">${esc(h.weds)}</span>
-        <span class="hero__name foil foil--deep hero__in" style="--i:3" data-text="${esc(c.couple.groom)}">${esc(c.couple.groom)}</span>
-      </h1>
-      <p class="hero__date hero__in" style="--i:4" aria-label="${esc(h.dateLine)}, ${esc(h.city)}">
-        <span>${esc(dt.month)}</span><i aria-hidden="true"></i><b>${esc(dt.days)}</b><i aria-hidden="true"></i><span>${esc(dt.year)}</span>
-      </p>
-      <p class="hero__weekdays hero__in" style="--i:5">${esc(dt.weekdays)} <span aria-hidden="true">·</span> ${esc(h.city)}</p>
-      <p class="hero__tag hero__in" style="--i:6">${esc(c.hashtag)}</p>
-    </div>
-    <a class="scroll-cue" href="#invitation" aria-label="Scroll to the invitation">
-      <span>${esc(h.scrollLabel)}</span>${use('i-chevron', 'scroll-cue__icon')}
-    </a>
-  </section>`,
-  };
-}
-
-function invitation(c) {
-  const v = c.invitation;
-  return {
-    theme: 'mughal',
-    html: `
-  <section class="section--invite" data-art id="invitation" aria-labelledby="invite-title">
-    <h2 class="visually-hidden" id="invite-title">Wedding invitation</h2>
-    <div class="mughal">
-      <div class="mughal__content">
-        <p class="invocation reveal" lang="hi">${esc(v.invocation)}</p>
-        <p class="invite__text reveal">${lines(v.blessing)}</p>
-        <p class="invite__hosts reveal">${names(v.hosts)}</p>
-        <p class="invite__text reveal">${lines(v.request)}</p>
-        <p class="name-script reveal reveal--script">${esc(v.bride.name)}</p>
-        <p class="invite__parent reveal">${lines(v.bride.lines)}</p>
-        <p class="invite__with reveal">${esc(v.connector)}</p>
-        <p class="name-script reveal reveal--script">${esc(v.groom.name)}</p>
-        <p class="invite__parent reveal">${lines(v.groom.lines)}</p>
+    <div class="scene">
+      <div class="scene__content">
+        <div class="scene__intro">
+          <p class="eyebrow hero__in" style="--i:0">${esc(h.preface)}</p>
+          <h1 class="hero__names" id="cover-title">
+            <span class="hero__name foil foil--deep hero__in" style="--i:1" data-text="${esc(c.couple.bride)}">${esc(c.couple.bride)}</span>
+            <span class="hero__weds hero__in" style="--i:2">${esc(h.weds)}</span>
+            <span class="hero__name foil foil--deep hero__in" style="--i:3" data-text="${esc(c.couple.groom)}">${esc(c.couple.groom)}</span>
+          </h1>
+          <p class="hero__date hero__in" style="--i:4" aria-label="${esc(h.dateLine)}, ${esc(h.city)}">
+            <span>${esc(dt.month)}</span><i aria-hidden="true"></i><b>${esc(dt.days)}</b><i aria-hidden="true"></i><span>${esc(dt.year)}</span>
+          </p>
+          <p class="hero__weekdays hero__in" style="--i:5">${esc(dt.weekdays)} <span aria-hidden="true">·</span> ${esc(h.city)}</p>
+          <p class="hero__tag hero__in" style="--i:6">${esc(c.hashtag)}</p>
+          <a class="scroll-cue hero__in" style="--i:7" href="#invitation" aria-label="Scroll to the invitation">
+            <span>${esc(h.scrollLabel)}</span>${use('i-chevron', 'scroll-cue__icon')}
+          </a>
+        </div>
+        <div class="scene__invite" id="invitation">
+          <h2 class="visually-hidden">Wedding invitation</h2>
+          <div class="reveal">${divider('divider--small')}</div>
+          <p class="invocation reveal" lang="hi">${esc(v.invocation)}</p>
+          <p class="invite__text reveal">${lines(v.blessing)}</p>
+          <p class="invite__hosts reveal">${names(v.hosts)}</p>
+          <p class="invite__text reveal">${lines(v.request)}</p>
+          <p class="name-script reveal reveal--script">${esc(v.bride.name)}</p>
+          <p class="invite__parent reveal">${lines(v.bride.lines)}</p>
+          <p class="invite__with reveal">${esc(v.connector)}</p>
+          <p class="name-script reveal reveal--script">${esc(v.groom.name)}</p>
+          <p class="invite__parent reveal">${lines(v.groom.lines)}</p>
+        </div>
       </div>
     </div>
   </section>`,
@@ -536,7 +535,6 @@ export function renderBody(c) {
 
   const sections = [
     hero(c),
-    invitation(c),
     meetCouple(c),
     timeline(c, venue),
     ...(venue ? [setting(c)] : []),
@@ -551,7 +549,7 @@ export function renderBody(c) {
     // canvas sections flow into each other with no divider; the hero fades into
     // the Mughal arch, whose balustrade ends it naturally
     const light = (t) => ['ivory', 'blush', 'paper'].includes(t);
-    const skip = !prev || !TOP[s.theme] || prev.theme === s.theme || prev.theme === 'mughal' || (light(prev.theme) && light(s.theme));
+    const skip = !prev || !TOP[s.theme] || prev.theme === s.theme || (light(prev.theme) && light(s.theme));
     if (!skip) html += edgeBetween(prev.theme, s.theme);
     html += s.html;
   });

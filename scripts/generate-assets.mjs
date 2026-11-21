@@ -229,7 +229,7 @@ async function art() {
   await rm(out(), { recursive: true, force: true });
   await mkdir(out(), { recursive: true });
   const src = (f) => path.join(root, 'assets/art', f);
-  for (const f of ['hero-arch.jpg', 'lotus-emboss.webp', 'lantern-arch.webp', 'mughal-arch.webp', 'lotus-border.jpg']) {
+  for (const f of ['hero-arch.jpg', 'lotus-emboss.webp', 'lantern-arch.webp', 'lotus-border.jpg']) {
     const { size } = await stat(src(f));
     if (size <= 300 * 1024) {
       await writeFile(out(f), await readFile(src(f)));

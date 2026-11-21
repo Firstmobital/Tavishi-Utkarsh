@@ -864,7 +864,8 @@ html.lenis body {
   min-height: 560px;
   overflow: hidden;
   isolation: isolate;
-  background: #f0e3d5;
+  /* the same woven canvas as the rest of the invite */
+  background: #ebeae5 url('/images/art/canvas.webp') 0 0 / calc(var(--colw) * 590 / 1125) auto repeat;
 }
 
 @media (min-width: 600px) {
@@ -879,6 +880,7 @@ html.lenis body {
   z-index: -3;
   transform-origin: 50% 30%;
   transform: scale(calc(1 - var(--p, 0) * 0.06));
+  mix-blend-mode: multiply; /* white wall → canvas shows through */
 }
 
 .cover__img {
@@ -899,9 +901,14 @@ html.lenis body {
 }
 
 .cover__content {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 2;
-  padding: calc(max(15vh, 92px) + env(safe-area-inset-top)) 14% 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14% 4vh;
   text-align: center;
 }
 
@@ -2429,15 +2436,3 @@ html:not(.js) .closing {
   font-size: min(11px, calc(var(--colw) * 0.027));
 }
 
-/* a soft cream glow behind the names keeps them crisp over the garlands */
-.cover__content::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  left: 6%;
-  right: 6%;
-  top: calc(max(15vh, 92px) - 20px);
-  height: calc(var(--colw) * 0.82);
-  background: radial-gradient(ellipse at 50% 50%, rgba(246, 236, 222, 0.85) 30%, rgba(246, 236, 222, 0) 70%);
-  pointer-events: none;
-}

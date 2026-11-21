@@ -231,7 +231,13 @@ async function art() {
   const src = (f) => path.join(root, 'assets/art', f);
   // cover: responsive sizes (it is the largest thing on the first screen)
   for (const w of [480, 768]) {
-    await sharp(src('garland-lamps.webp')).resize({ width: w }).webp({ quality: 68, effort: 6 }).toFile(out(`cover-lamps-${w}.webp`));
+    // brighten the cream wall (≈ 234,226,219) to white so, multiplied over the
+    // woven canvas in CSS, the wall disappears and only the décor remains
+    await sharp(src('garland-lamps.webp'))
+      .resize({ width: w })
+      .linear([255 / 234, 255 / 226, 255 / 219], [0, 0, 0])
+      .webp({ quality: 68, effort: 6 })
+      .toFile(out(`cover-lamps-${w}.webp`));
   }
   for (const f of ['hero-arch.jpg', 'lotus-emboss.webp', 'lantern-arch.webp', 'lotus-border.jpg']) {
     const { size } = await stat(src(f));

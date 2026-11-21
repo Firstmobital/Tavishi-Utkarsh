@@ -360,7 +360,10 @@ html.lenis body {
 }
 
 .hero .eyebrow {
-  font-size: 11.5px;
+  font-size: calc(var(--colw) * 0.025);
+  letter-spacing: 0.16em;
+  white-space: nowrap;
+  color: var(--gold-deep);
 }
 
 .script-title {
@@ -842,115 +845,31 @@ html.lenis body {
    ========================================================== */
 .hero {
   position: relative;
-  height: 100vh;
-  height: 100svh;
-  min-height: 620px;
+  /* exactly the artwork's proportions, so nothing is ever cropped */
+  aspect-ratio: 736 / 1308;
   overflow: hidden;
   isolation: isolate;
-  background: var(--emerald-deep);
-  color: var(--cream);
+  background: #f6e4d6;
+  color: var(--maroon);
 }
 
-@media (min-width: 600px) {
-  .hero {
-    height: min(100vh, 940px);
-  }
-}
 
-/* night sky with twinkling stars above the photo */
-.hero__sky {
+
+/* the family's illustrated palace arch fills the cover; names sit in the cream opening */
+.hero__art {
   position: absolute;
   inset: 0;
-  z-index: -4;
-  background:
-    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(30, 107, 83, 0.45), transparent 70%),
-    linear-gradient(180deg, #051a14 0%, var(--emerald-deep) 45%, #0d3a2c 100%);
-}
-
-.stars {
-  position: absolute;
-  inset: 0 0 45% 0;
-}
-
-.star {
-  position: absolute;
-  left: var(--x);
-  top: var(--y);
-  width: var(--s);
-  height: var(--s);
-  border-radius: 50%;
-  background: #fff6dc;
-  box-shadow: 0 0 6px 1px rgba(255, 228, 170, 0.6);
-  animation: twinkle var(--t) ease-in-out var(--dl) infinite alternate;
-}
-
-@keyframes twinkle {
-  from {
-    opacity: 0.15;
-    transform: scale(0.7);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* the couple's photo fills the lower half and melts into the sky */
-.hero__photo {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 54%;
   z-index: -3;
-  overflow: hidden;
-  -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.55) 16%, #000 34%);
-  mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.55) 16%, #000 34%);
-}
-
-.hero__media {
-  position: absolute;
-  inset: 0;
-  transform-origin: 50% 40%;
-  animation: kenburns 26s ease-in-out infinite alternate;
-}
-
-.hero__img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 50% 0%;
-}
-
-@keyframes kenburns {
-  from {
-    transform: scale(1.02);
-  }
-  to {
-    transform: scale(1.1);
-  }
-}
-
-.hero__shade {
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-  background:
-    radial-gradient(ellipse 70% 40% at 50% 26%, rgba(5, 26, 20, 0.55), transparent 70%),
-    linear-gradient(0deg, #b18d81 0%, rgba(177, 141, 129, 0.85) 4%, rgba(177, 141, 129, 0) 13%);
-}
-
-.hero__frame {
-  position: absolute;
-  inset: 14px 14px 13%;
-  z-index: -1;
-  --frame: rgba(232, 207, 154, 0.75);
+  object-position: 50% 100%;
 }
 
 .hero__content {
   position: relative;
   z-index: 1;
-  padding: calc(max(9vh, 74px) + env(safe-area-inset-top)) var(--space-6) 0;
+  padding: calc(var(--colw) * 0.3) 15% 0;
   text-align: center;
 }
 
@@ -965,16 +884,22 @@ html.lenis body {
 }
 
 .hero__name {
-  font-size: clamp(66px, min(20vw, 10.5vh), 100px);
+  font-size: clamp(54px, min(16vw, 8.6vh), 82px);
+}
+
+/* deeper antique-gold foil for the light arch interior */
+.foil--deep {
+  background-image: linear-gradient(105deg, #7a5420 0%, #b8873b 22%, #6e4a1b 40%, #c99a4b 55%, #7a5420 72%, #a8792f 88%, #6e4a1b 100%);
+  filter: drop-shadow(0 1px 0 rgba(255, 250, 240, 0.6));
 }
 
 .hero__weds {
   margin: -0.1em 0 0.1em;
   font-family: var(--f-body);
   font-style: italic;
-  font-size: 22px;
+  font-size: 21px;
   letter-spacing: 0.1em;
-  color: var(--cream);
+  color: var(--rose);
 }
 
 /* JANUARY │ 15 · 16 │ 2027 */
@@ -983,8 +908,8 @@ html.lenis body {
   align-items: center;
   justify-content: center;
   gap: var(--space-3);
-  margin-top: var(--space-4);
-  color: var(--cream);
+  margin-top: var(--space-3);
+  color: var(--maroon);
 }
 
 .hero__date span {
@@ -997,14 +922,15 @@ html.lenis body {
 .hero__date i {
   width: 1px;
   height: 26px;
-  background: linear-gradient(transparent, var(--gold-light), transparent);
+  background: linear-gradient(transparent, var(--gold-2), transparent);
 }
 
 .hero__date b {
+  white-space: nowrap;
   font-size: 30px;
   font-weight: 600;
   line-height: 1;
-  color: var(--gold-light);
+  color: var(--gold-deep);
   letter-spacing: 0.04em;
 }
 
@@ -1014,14 +940,14 @@ html.lenis body {
   font-size: 11px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: var(--cream-2);
+  color: var(--maroon-2);
 }
 
 .hero__tag {
   margin-top: var(--space-2);
   font-style: italic;
-  font-size: 20px;
-  color: var(--gold-light);
+  font-size: 19px;
+  color: var(--gold-deep);
 }
 
 .hero__in {
@@ -1067,22 +993,20 @@ html.lenis body {
 .scroll-cue {
   position: absolute;
   left: 50%;
-  bottom: calc(16px + env(safe-area-inset-bottom));
+  top: calc(var(--colw) * 1.06);
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 7px 16px 4px;
-  border-radius: 999px;
-  background: rgba(7, 32, 25, 0.6);
+  gap: 0;
+  padding: 4px 10px;
   transform: translateX(-50%);
   font-family: var(--f-caps);
   font-size: 11px;
   letter-spacing: 0.3em;
   text-transform: uppercase;
   text-decoration: none;
-  color: var(--gold-light);
+  color: var(--gold-deep);
 }
 
 .scroll-cue__icon {
@@ -1151,8 +1075,6 @@ html.lenis body {
 }
 
 .is-paused .petal,
-.is-paused .star,
-.is-paused .hero__media,
 .is-paused .foil::after,
 .is-paused .scroll-cue__icon {
   animation-play-state: paused;

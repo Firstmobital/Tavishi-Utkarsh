@@ -62,17 +62,6 @@ async function variants() {
 
 /* ---------- hero crop + desktop backdrop ---------- */
 async function hero() {
-  // Hero photo: portrait crop of the couple dancing (faces + full figures)
-  {
-    const src = srcImg('couple/couple-dance.webp');
-    const { height } = await sharp(src).metadata();
-    const crop = await sharp(src).extract({ left: 340, top: 0, width: 900, height }).toBuffer();
-    for (const w of [540, 900]) {
-      const name = `couple-dance-hero-${w}.webp`;
-      const info = await sharp(crop).resize({ width: w }).webp({ quality: 70, effort: 6 }).toFile(pub('images/couple', name));
-      add('couple/couple-dance-hero', info, `couple/${name}`);
-    }
-  }
   if (!VENUE) {
     await rm(pub('images/venue'), { recursive: true, force: true });
     return;
@@ -240,7 +229,7 @@ async function art() {
   await rm(out(), { recursive: true, force: true });
   await mkdir(out(), { recursive: true });
   const src = (f) => path.join(root, 'assets/art', f);
-  for (const f of ['lotus-emboss.webp', 'lantern-arch.webp', 'mughal-arch.webp', 'lotus-border.jpg']) {
+  for (const f of ['hero-arch.jpg', 'lotus-emboss.webp', 'lantern-arch.webp', 'mughal-arch.webp', 'lotus-border.jpg']) {
     const { size } = await stat(src(f));
     if (size <= 300 * 1024) {
       await writeFile(out(f), await readFile(src(f)));

@@ -163,19 +163,14 @@ function hero(c) {
     theme: 'photo',
     html: `
   <section class="hero" id="cover" aria-label="Cover">
-    <div class="hero__sky" aria-hidden="true"><div class="stars"></div></div>
-    <div class="hero__photo">
-      <div class="hero__media">${img(h.image, { alt: h.imageAlt, sizes: '(min-width: 600px) 480px, 100vw', cls: 'hero__img', eager: true })}</div>
-    </div>
-    <div class="hero__shade" aria-hidden="true"></div>
+    <img class="hero__art" src="${esc(h.image)}" width="${h.imageSize[0]}" height="${h.imageSize[1]}" alt="${esc(h.imageAlt)}" fetchpriority="high" decoding="async">
     <div class="petals" aria-hidden="true"></div>
-    <div class="hero__frame arch-card">${archLayers({ fill: false, inset: 5, dots: false })}</div>
     <div class="hero__content">
       <p class="eyebrow eyebrow--light hero__in" style="--i:0">${esc(h.preface)}</p>
       <h1 class="hero__names">
-        <span class="hero__name foil hero__in" style="--i:1" data-text="${esc(c.couple.bride)}">${esc(c.couple.bride)}</span>
+        <span class="hero__name foil foil--deep hero__in" style="--i:1" data-text="${esc(c.couple.bride)}">${esc(c.couple.bride)}</span>
         <span class="hero__weds hero__in" style="--i:2">${esc(h.weds)}</span>
-        <span class="hero__name foil hero__in" style="--i:3" data-text="${esc(c.couple.groom)}">${esc(c.couple.groom)}</span>
+        <span class="hero__name foil foil--deep hero__in" style="--i:3" data-text="${esc(c.couple.groom)}">${esc(c.couple.groom)}</span>
       </h1>
       <p class="hero__date hero__in" style="--i:4" aria-label="${esc(h.dateLine)}, ${esc(h.city)}">
         <span>${esc(dt.month)}</span><i aria-hidden="true"></i><b>${esc(dt.days)}</b><i aria-hidden="true"></i><span>${esc(dt.year)}</span>
@@ -581,7 +576,7 @@ export function renderHead(c, { siteUrl = '' } = {}) {
   const base = siteUrl.replace(/\/$/, '');
   const abs = (p) => (base ? `${base}${p}` : p);
   const fontsHindi = `https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@500&display=swap&text=${encodeURIComponent(c.invitation.invocation)}`;
-  const heroV = variants(c.hero.image);
+
   return `
     <title>${esc(m.title)}</title>
     <meta name="description" content="${esc(m.description)}">
@@ -607,7 +602,7 @@ export function renderHead(c, { siteUrl = '' } = {}) {
 
     <link rel="preload" href="/fonts/PinyonScript-400.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/fonts/CormorantGaramond-var.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" as="image" href="${heroV[heroV.length - 1].src}" imagesrcset="${heroV.map((x) => `${x.src} ${x.w}w`).join(', ')}" imagesizes="(min-width: 600px) 480px, 100vw" fetchpriority="high">
+    <link rel="preload" as="image" href="${esc(c.hero.image)}" fetchpriority="high">
     <style>${FONT_FACES}
 :root{--arch-mask:${archMaskCss()}}</style>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

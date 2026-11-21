@@ -13,8 +13,4 @@ export const images = {
     { w: 640, h: 961, src: '/images/couple/couple-portrait-640.webp' },
     { w: 1066, h: 1600, src: '/images/couple/couple-portrait-1066.webp' },
   ],
-  'couple/couple-dance-hero': [
-    { w: 540, h: 640, src: '/images/couple/couple-dance-hero-540.webp' },
-    { w: 900, h: 1066, src: '/images/couple/couple-dance-hero-900.webp' },
-  ],
 };

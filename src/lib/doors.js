@@ -1,105 +1,107 @@
 /**
- * Carved Rajasthani palace doors for the opening overlay — original SVG.
+ * Opening gatefold: two emerald velvet panels meeting at a seam, a faint
+ * embossed jharokha arch across both, fine gold edges, and a lace-edged
+ * ivory seal with the couple's monogram. Original SVG.
  *
- * One <symbol> (viewBox 400 x 860) holds both door leaves. Each leaf is an
- * <svg> that shows half of it (left: x 0–200, right: x 200–400), so the two
- * halves meet exactly on the seam. A static carved frame with the scalloped
- * arch sits on top and stays put while the leaves swing open.
+ * One <symbol> (viewBox 400 x 860) holds both panels. Each leaf is an <svg>
+ * that shows half of it (left: x 0–200, right: x 200–400), so the halves meet
+ * exactly on the seam.
  */
 import { archPath } from './arch.js';
 
 const W = 400;
 const H = 860;
-const ARCH = { W, topH: 196, bottom: H, apex: 34, lobes: 6 };
-
-const n = (v) => Math.round(v * 10) / 10;
-
-function rosette(cx, cy, r) {
-  let petals = '';
-  for (let i = 0; i < 8; i++) {
-    petals += `<ellipse cx="${cx}" cy="${n(cy - r * 0.55)}" rx="${n(r * 0.22)}" ry="${n(r * 0.48)}" transform="rotate(${i * 45} ${cx} ${cy})"/>`;
-  }
-  return `<g fill="url(#dr-gold)" fill-opacity=".92">${petals}</g>
-    <circle cx="${cx}" cy="${cy}" r="${n(r * 1.08)}" fill="none" stroke="url(#dr-gold)" stroke-width="1.2"/>
-    <circle cx="${cx}" cy="${cy}" r="${n(r * 0.22)}" fill="#F7E4B0"/>`;
-}
-
-/** One door leaf's carvings; mirror=true draws the right leaf. */
-function leaf(mirror) {
-  const X = (x) => (mirror ? W - x : x);
-  const px = mirror ? W - 172 : 28; // panel left edge
-  const pw = 144;
-  const topPanel = archPath({ W: pw, topH: 46, bottom: 236, apex: 8, lobes: 3, closed: true, ox: px, oy: 236 }).d;
-  const topInner = archPath({ W: pw, topH: 46, bottom: 236, apex: 8, lobes: 3, inset: 7, closed: true, ox: px, oy: 234 }).d;
-  let studs = '';
-  for (let y = 226; y <= 840; y += 26) {
-    studs += `<use href="#dr-stud" x="${X(13)}" y="${y}"/><use href="#dr-stud" x="${X(187)}" y="${y}"/>`;
-  }
-  for (const y of [212, 494, 826]) {
-    for (let x = 33; x <= 167; x += 22) studs += `<use href="#dr-stud" x="${X(x)}" y="${y}"/>`;
-  }
-  const ring = X(184);
-  return `
-    <path d="${topPanel}" fill="url(#dr-panel)" stroke="url(#dr-gold)" stroke-width="1.8"/>
-    <path d="${topInner}" fill="none" stroke="#C9A45C" stroke-opacity=".7" stroke-width=".9"/>
-    <rect x="${px}" y="520" width="${pw}" height="282" rx="4" fill="url(#dr-panel)" stroke="url(#dr-gold)" stroke-width="1.8"/>
-    <rect x="${px + 7}" y="527" width="${pw - 14}" height="268" rx="2" fill="none" stroke="#C9A45C" stroke-opacity=".7" stroke-width=".9"/>
-    ${rosette(px + pw / 2, 372, 26)}
-    ${rosette(px + pw / 2, 661, 30)}
-    ${studs}
-    <circle cx="${ring}" cy="${514}" r="15" fill="none" stroke="url(#dr-gold)" stroke-width="3.2"/>
-    <circle cx="${ring}" cy="${497}" r="5" fill="url(#dr-gold)"/>`;
-}
+const n = (v) => Math.round(v * 100) / 100;
 
 export function doorSymbol() {
-  const opening = archPath({ ...ARCH, closed: true }).d;
-  // lattice inside the arch head, above the panels
-  let jali = '';
-  for (let x = -200; x < W + 200; x += 18) {
-    jali += `M${x} 30L${x + 190} 220M${x + 190} 30L${x} 220`;
-  }
+  const arch = { W, topH: 250, bottom: 790, apex: 96, lobes: 6 };
+  const outer = archPath({ ...arch, inset: 40 }).d;
+  const inner = archPath({ ...arch, inset: 54 }).d;
   return `
-  <linearGradient id="dr-gold" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="#F7E4B0"/><stop offset=".45" stop-color="#D6B26B"/><stop offset="1" stop-color="#A47C3B"/>
+  <linearGradient id="dv-velvet" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#061F17"/>
+    <stop offset=".24" stop-color="#11493A"/>
+    <stop offset=".46" stop-color="#0C392C"/>
+    <stop offset=".5" stop-color="#041510"/>
+    <stop offset=".54" stop-color="#0C392C"/>
+    <stop offset=".76" stop-color="#11493A"/>
+    <stop offset="1" stop-color="#061F17"/>
   </linearGradient>
-  <linearGradient id="dr-wood" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0" stop-color="#0B2E23"/><stop offset=".5" stop-color="#11473A"/><stop offset="1" stop-color="#0B2E23"/>
-  </linearGradient>
-  <linearGradient id="dr-panel" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="#145A47"/><stop offset="1" stop-color="#0E3F31"/>
-  </linearGradient>
-  <radialGradient id="dr-stud-g" cx="35%" cy="35%" r="65%">
-    <stop offset="0" stop-color="#FFF4D2"/><stop offset=".5" stop-color="#D6B26B"/><stop offset="1" stop-color="#7E5C26"/>
+  <radialGradient id="dv-glow" cx="50%" cy="42%" r="60%">
+    <stop offset="0" stop-color="#1E6B53" stop-opacity=".55"/>
+    <stop offset="1" stop-color="#1E6B53" stop-opacity="0"/>
   </radialGradient>
-  <clipPath id="dr-opening"><path d="${opening}"/></clipPath>
-  <g id="dr-stud"><circle r="3.6" fill="url(#dr-stud-g)"/></g>
+  <linearGradient id="dv-gold" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#F3DCA0"/><stop offset=".5" stop-color="#C9A45C"/><stop offset="1" stop-color="#9C7638"/>
+  </linearGradient>
   <symbol id="door-art" viewBox="0 0 ${W} ${H}">
-    <g clip-path="url(#dr-opening)">
-      <rect width="${W}" height="${H}" fill="url(#dr-wood)"/>
-      <path d="${jali}" stroke="#C9A45C" stroke-opacity=".28" stroke-width="1"/>
-      ${leaf(false)}
-      ${leaf(true)}
-      <path d="M200 0V${H}" stroke="#04140F" stroke-width="2.4"/>
-      <path d="M197.6 0V${H}M202.4 0V${H}" stroke="#C9A45C" stroke-opacity=".55" stroke-width=".6"/>
+    <rect width="${W}" height="${H}" fill="url(#dv-velvet)"/>
+    <rect width="${W}" height="${H}" fill="url(#dv-glow)"/>
+    <!-- embossed arch: shadow, highlight, then a whisper of gold -->
+    <g fill="none" stroke-width="2">
+      <path d="${outer}" stroke="#03120D" stroke-opacity=".7" transform="translate(0 1.4)"/>
+      <path d="${outer}" stroke="#FFFFFF" stroke-opacity=".07" transform="translate(0 -1)"/>
+      <path d="${outer}" stroke="url(#dv-gold)" stroke-opacity=".5" stroke-width=".8"/>
+      <path d="${inner}" stroke="#03120D" stroke-opacity=".5" stroke-width="1.4" transform="translate(0 1)"/>
+      <path d="${inner}" stroke="url(#dv-gold)" stroke-opacity=".28" stroke-width=".6"/>
     </g>
+    <!-- fine gold edge around the pair -->
+    <rect x="16" y="16" width="${W - 32}" height="${H - 32}" fill="none" stroke="url(#dv-gold)" stroke-opacity=".7" stroke-width="1"/>
+    <rect x="22" y="22" width="${W - 44}" height="${H - 44}" fill="none" stroke="#C9A45C" stroke-opacity=".3" stroke-width=".6"/>
+    <use href="#o-filigree" x="24" y="24" width="46" height="46"/>
+    <use href="#o-filigree" x="24" y="24" width="46" height="46" transform="matrix(-1 0 0 1 ${W} 0)"/>
+    <use href="#o-filigree" x="24" y="24" width="46" height="46" transform="matrix(1 0 0 -1 0 ${H})"/>
+    <use href="#o-filigree" x="24" y="24" width="46" height="46" transform="matrix(-1 0 0 -1 ${W} ${H})"/>
+    <!-- seam -->
+    <path d="M200 0V${H}" stroke="#020D09" stroke-width="2.2"/>
+    <path d="M198.2 0V${H}M201.8 0V${H}" stroke="#2C7A60" stroke-opacity=".35" stroke-width=".6"/>
   </symbol>`;
 }
 
-/** Static carved frame (wall with the arch cut out). */
-export function doorFrame() {
-  const opening = archPath({ ...ARCH, closed: true }).d;
-  const outer = archPath({ ...ARCH }).d;
-  const inner = archPath({ ...ARCH, inset: 9 }).d;
-  const molding = archPath({ ...ARCH, inset: -10 }).d;
-  return `<svg class="doors__frame" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMin slice" aria-hidden="true" focusable="false">
-    <path d="M-400 -10H${W + 400}V${H + 10}H-400Z ${opening}" fill="#061D17" fill-rule="evenodd"/>
-    <path d="${molding}" fill="none" stroke="#C9A45C" stroke-opacity=".45" stroke-width="1"/>
-    <path d="${outer}" fill="none" stroke="url(#dr-gold)" stroke-width="3"/>
-    <path d="${inner}" fill="none" stroke="#C9A45C" stroke-opacity=".8" stroke-width="1"/>
+/** Lace-edged ivory seal with an embossed gold rim and the monogram. */
+export function seal([a, b]) {
+  const cx = 80;
+  const cy = 92;
+  // scalloped lozenge outline: points on a softened diamond, joined by outward arcs
+  const N = 22;
+  const pts = [];
+  for (let i = 0; i < N; i++) {
+    const t = (i / N) * Math.PI * 2;
+    const k = 1 + 0.16 * Math.abs(Math.cos(t)) ** 3; // a little taller at top and bottom
+    pts.push([cx + Math.sin(t) * 62, cy - Math.cos(t) * 70 * k]);
+  }
+  let d = `M${n(pts[0][0])} ${n(pts[0][1])}`;
+  for (let i = 1; i <= N; i++) {
+    const [x0, y0] = pts[i - 1];
+    const [x1, y1] = pts[i % N];
+    const r = Math.hypot(x1 - x0, y1 - y0) * 0.58;
+    d += `A${n(r)} ${n(r)} 0 0 1 ${n(x1)} ${n(y1)}`;
+  }
+  d += 'Z';
+  const mono = (dy, fill, op) =>
+    `<g fill="${fill}" fill-opacity="${op}" transform="translate(0 ${dy})">
+      <text x="${cx - 24}" y="${cy + 12}" text-anchor="middle" font-family="Cinzel, serif" font-size="34" font-weight="500">${a}</text>
+      <text x="${cx + 24}" y="${cy + 12}" text-anchor="middle" font-family="Cinzel, serif" font-size="34" font-weight="500">${b}</text>
+    </g>`;
+  return `<svg class="doors__seal" viewBox="0 0 160 184" aria-hidden="true" focusable="false">
+    <defs>
+      <radialGradient id="ds-paper" cx="45%" cy="38%" r="70%">
+        <stop offset="0" stop-color="#FFFBF2"/><stop offset=".7" stop-color="#F4E8D2"/><stop offset="1" stop-color="#E6D5B4"/>
+      </radialGradient>
+    </defs>
+    <path d="${d}" fill="url(#ds-paper)" stroke="#C9A45C" stroke-width="1.1"/>
+    <ellipse cx="${cx}" cy="${cy}" rx="49" ry="57" fill="none" stroke="url(#dv-gold)" stroke-width="1.6"/>
+    <ellipse cx="${cx}" cy="${cy}" rx="44" ry="52" fill="none" stroke="#B08D57" stroke-width="1.6" stroke-linecap="round" stroke-dasharray=".1 4.2"/>
+    <use href="#o-lotus" x="${cx - 11}" y="${cy - 50}" width="22" height="14"/>
+    <use href="#o-lotus" x="${cx - 11}" y="${cy + 36}" width="22" height="14" transform="rotate(180 ${cx} ${cy + 43})"/>
+    ${mono(0.8, '#FFFFFF', 0.85)}
+    ${mono(-0.6, '#5E4419', 0.55)}
+    ${mono(0, '#8A6A33', 1)}
+    <text x="${cx}" y="${cy + 10}" text-anchor="middle" font-family="'Pinyon Script', cursive" font-size="24" fill="#C2185B" fill-opacity=".85">&amp;</text>
   </svg>`;
 }
 
 export const doorLeaf = (side) =>
   side === 'l'
-    ? `<svg class="doors__art" viewBox="0 0 200 ${H}" preserveAspectRatio="xMaxYMin slice" aria-hidden="true" focusable="false"><use href="#door-art" width="${W}" height="${H}"/></svg>`
-    : `<svg class="doors__art" viewBox="200 0 200 ${H}" preserveAspectRatio="xMinYMin slice" aria-hidden="true" focusable="false"><use href="#door-art" width="${W}" height="${H}"/></svg>`;
+    ? `<svg class="doors__art" viewBox="0 0 200 ${H}" preserveAspectRatio="xMaxYMid slice" aria-hidden="true" focusable="false"><use href="#door-art" width="${W}" height="${H}"/></svg>`
+    : `<svg class="doors__art" viewBox="200 0 200 ${H}" preserveAspectRatio="xMinYMid slice" aria-hidden="true" focusable="false"><use href="#door-art" width="${W}" height="${H}"/></svg>`;

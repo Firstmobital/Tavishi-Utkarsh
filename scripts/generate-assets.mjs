@@ -20,6 +20,8 @@ import { content } from '../src/content.js';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const pub = (...p) => path.join(root, 'public', ...p);
 const srcImg = (...p) => path.join(root, 'assets/images', ...p);
+// When the décor is a surprise, no venue render is written into public/ at all.
+const VENUE = content.SHOW_VENUE_RENDERS !== false;
 
 const GOLD = '#C9A45C';
 const GOLD_LIGHT = '#E8CF9A';
@@ -36,7 +38,7 @@ const add = (key, info, file) => (manifest[key] ||= []).push({ w: info.width, h:
 async function variants() {
   const jobs = [
     ['couple', [640, 1080, 1600], 78],
-    ['venue', [640, 1080], 74],
+    ...(VENUE ? [['venue', [640, 1080], 74]] : []),
   ];
   for (const [dir, widths, quality] of jobs) {
     const outDir = pub('images', dir);
@@ -60,6 +62,21 @@ async function variants() {
 
 /* ---------- hero crop + desktop backdrop ---------- */
 async function hero() {
+  // Hero photo: portrait crop of the couple dancing (faces + full figures)
+  {
+    const src = srcImg('couple/couple-dance.webp');
+    const { height } = await sharp(src).metadata();
+    const crop = await sharp(src).extract({ left: 340, top: 0, width: 900, height }).toBuffer();
+    for (const w of [540, 900]) {
+      const name = `couple-dance-hero-${w}.webp`;
+      const info = await sharp(crop).resize({ width: w }).webp({ quality: 70, effort: 6 }).toFile(pub('images/couple', name));
+      add('couple/couple-dance-hero', info, `couple/${name}`);
+    }
+  }
+  if (!VENUE) {
+    await rm(pub('images/venue'), { recursive: true, force: true });
+    return;
+  }
   const src = srcImg('venue/floral-dome.webp');
   const { width, height } = await sharp(src).metadata();
   const cropW = Math.round(height * 0.72);

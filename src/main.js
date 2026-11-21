@@ -157,30 +157,36 @@ function initDoors() {
   }
   main.inert = true;
   const btn = $('.doors__open', doors);
-  btn.focus({ preventScroll: true });
-  btn.addEventListener(
-    'click',
-    () => {
-      startMusic(true);
-      try {
-        sessionStorage.setItem('tu-doors', '1');
-      } catch {
-        /* private mode */
-      }
-      doors.classList.add('is-opening');
-      const reveal = reduced ? 250 : 1150; // hero animates in as the doors finish
-      const fade = reduced ? 0 : 1350;
-      setTimeout(() => {
-        root.classList.remove('doors-up');
-        main.inert = false;
-        lenis?.start();
-        onScroll();
-      }, reveal);
-      setTimeout(() => doors.classList.add('is-gone'), fade);
-      setTimeout(() => doors.remove(), fade + 900);
-    },
-    { once: true },
-  );
+  const skip = $('.doors__skip', doors);
+  // focus for keyboard users without painting a focus ring on load
+  btn.focus({ preventScroll: true, focusVisible: false });
+
+  let opened = false;
+  const open = (quick) => {
+    if (opened) return;
+    opened = true;
+    startMusic(true); // the tap / Skip click is the user gesture audio needs
+    try {
+      sessionStorage.setItem('tu-doors', '1');
+    } catch {
+      /* private mode */
+    }
+    const fast = quick || reduced;
+    doors.classList.add(fast ? 'is-skipping' : 'is-opening');
+    if (fast) doors.classList.add('is-gone');
+    const reveal = fast ? 150 : 1400; // hero animates in as the doors finish
+    const fade = fast ? 0 : 1600;
+    setTimeout(() => {
+      root.classList.remove('doors-up');
+      main.inert = false;
+      lenis?.start();
+      onScroll();
+    }, reveal);
+    if (!fast) setTimeout(() => doors.classList.add('is-gone'), fade);
+    setTimeout(() => doors.remove(), fade + 900);
+  };
+  btn.addEventListener('click', () => open(false));
+  skip?.addEventListener('click', () => open(true));
 }
 
 /* ==========================================================
@@ -205,9 +211,28 @@ function spawnPetals(host, count) {
   host.appendChild(frag);
 }
 
+function spawnStars(host, count) {
+  if (!host) return;
+  const frag = document.createDocumentFragment();
+  for (let i = 0; i < count; i++) {
+    const st = document.createElement('i');
+    st.className = 'star';
+    st.style.cssText = [
+      `--x:${(2 + Math.random() * 96).toFixed(1)}%`,
+      `--y:${(2 + Math.random() * 94).toFixed(1)}%`,
+      `--s:${(1 + Math.random() * 1.8).toFixed(1)}px`,
+      `--t:${(1.8 + Math.random() * 2.6).toFixed(1)}s`,
+      `--dl:${(-Math.random() * 4).toFixed(1)}s`,
+    ].join(';');
+    frag.appendChild(st);
+  }
+  host.appendChild(frag);
+}
+
 function initHero() {
   const hero = $('.hero');
   const phone = window.innerWidth <= 480;
+  spawnStars($('.hero .stars'), phone ? 22 : 30);
   spawnPetals($('.hero .petals'), phone ? 14 : 18);
   spawnPetals($('.petals--closing'), phone ? 8 : 10);
   if (hero && hasIO) {

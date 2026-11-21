@@ -6,7 +6,7 @@
  */
 import { archPath, ARCH_TOP } from './lib/arch.js';
 import { sprite, use, divider } from './lib/ornaments.js';
-import { doorSymbol, doorFrame, doorLeaf } from './lib/doors.js';
+import { doorSymbol, doorLeaf, seal } from './lib/doors.js';
 import { images } from './generated/images.js';
 
 /* ---------- helpers ---------- */
@@ -141,28 +141,27 @@ function doors(c) {
       <div class="doors__bloom" aria-hidden="true"></div>
       <div class="doors__leaf doors__leaf--l">${doorLeaf('l')}</div>
       <div class="doors__leaf doors__leaf--r">${doorLeaf('r')}</div>
-      ${doorFrame()}
       <button type="button" class="doors__open">
-        <span class="doors__seal" aria-hidden="true">
-          <span>${esc(d.monogram[0])}</span><i></i><span>${esc(d.monogram[1])}</span>
-        </span>
+        <span class="doors__seal-wrap">${seal(d.monogram)}</span>
         <span class="doors__prompt">${esc(d.prompt)}</span>
         <span class="visually-hidden"> — open the wedding invitation of ${esc(c.couple.bride)} and ${esc(c.couple.groom)}</span>
       </button>
+      <button type="button" class="doors__skip">${esc(d.skip || 'Skip')}<span class="visually-hidden"> the opening animation</span></button>
     </div>
   </div>`;
 }
 
-function hero(c, venue) {
+function hero(c) {
   const h = c.hero;
-  const media = venue
-    ? `<div class="hero__media">${img(h.image, { alt: h.imageAlt, sizes: '(min-width: 600px) 480px, 100vw', cls: 'hero__img', eager: true })}</div>`
-    : `<div class="hero__plain" aria-hidden="true"></div>`;
+  const dt = h.date;
   return {
     theme: 'photo',
     html: `
   <section class="hero" id="cover" aria-label="Cover">
-    ${media}
+    <div class="hero__sky" aria-hidden="true"><div class="stars"></div></div>
+    <div class="hero__photo">
+      <div class="hero__media">${img(h.image, { alt: h.imageAlt, sizes: '(min-width: 600px) 480px, 100vw', cls: 'hero__img', eager: true })}</div>
+    </div>
     <div class="hero__shade" aria-hidden="true"></div>
     <div class="petals" aria-hidden="true"></div>
     <div class="hero__frame arch-card">${archLayers({ fill: false, inset: 5, dots: false })}</div>
@@ -173,8 +172,10 @@ function hero(c, venue) {
         <span class="hero__weds hero__in" style="--i:2">${esc(h.weds)}</span>
         <span class="hero__name foil hero__in" style="--i:3" data-text="${esc(c.couple.groom)}">${esc(c.couple.groom)}</span>
       </h1>
-      <div class="hero__in" style="--i:4">${divider('divider--light')}</div>
-      <p class="hero__date hero__in" style="--i:5">${esc(h.dateLine)} <span aria-hidden="true">·</span> ${esc(h.city)}</p>
+      <p class="hero__date hero__in" style="--i:4" aria-label="${esc(h.dateLine)}, ${esc(h.city)}">
+        <span>${esc(dt.month)}</span><i aria-hidden="true"></i><b>${esc(dt.days)}</b><i aria-hidden="true"></i><span>${esc(dt.year)}</span>
+      </p>
+      <p class="hero__weekdays hero__in" style="--i:5">${esc(dt.weekdays)} <span aria-hidden="true">·</span> ${esc(h.city)}</p>
       <p class="hero__tag hero__in" style="--i:6">${esc(c.hashtag)}</p>
     </div>
     <a class="scroll-cue" href="#invitation" aria-label="Scroll to the invitation">
@@ -537,7 +538,7 @@ export function renderBody(c) {
   </defs></svg>`;
 
   const sections = [
-    hero(c, venue),
+    hero(c),
     invitation(c),
     meetCouple(c),
     timeline(c, venue),
@@ -557,7 +558,7 @@ export function renderBody(c) {
 
   return `${sprite(doorSymbol())}${clips}
   ${doors(c)}
-  <div class="backdrop${venue ? ' backdrop--photo' : ''}" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="backdrop${venue ? ' backdrop--photo" style="--backdrop-img:url(/images/venue/backdrop.webp)' : ''}" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <main class="page" id="top">${html}
   </main>
   ${chrome(c)}`;
@@ -575,7 +576,7 @@ export function renderHead(c, { siteUrl = '' } = {}) {
   const base = siteUrl.replace(/\/$/, '');
   const abs = (p) => (base ? `${base}${p}` : p);
   const fontsHindi = `https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@500&display=swap&text=${encodeURIComponent(c.invitation.invocation)}`;
-  const heroV = venue ? variants(c.hero.image) : [];
+  const heroV = variants(c.hero.image);
   return `
     <title>${esc(m.title)}</title>
     <meta name="description" content="${esc(m.description)}">
@@ -601,7 +602,7 @@ export function renderHead(c, { siteUrl = '' } = {}) {
 
     <link rel="preload" href="/fonts/PinyonScript-400.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/fonts/CormorantGaramond-var.woff2" as="font" type="font/woff2" crossorigin>
-    ${venue ? `<link rel="preload" as="image" href="${heroV[heroV.length - 1].src}" imagesrcset="${heroV.map((x) => `${x.src} ${x.w}w`).join(', ')}" imagesizes="(min-width: 600px) 480px, 100vw" fetchpriority="high">` : ''}
+    <link rel="preload" as="image" href="${heroV[heroV.length - 1].src}" imagesrcset="${heroV.map((x) => `${x.src} ${x.w}w`).join(', ')}" imagesizes="(min-width: 600px) 480px, 100vw" fetchpriority="high">
     <style>${FONT_FACES}
 :root{--arch-mask:${archMaskCss()}}</style>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

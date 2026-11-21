@@ -3,7 +3,7 @@
 A mobile-first, single-page digital wedding invitation built with **Vite + vanilla HTML/CSS/JS**.
 The page is rendered at build time from one content file, so it ships as plain static HTML (fast on low-end phones, works without JavaScript).
 
-On first visit, guests see a pair of carved palace doors. Tapping them swings the doors open, starts the music and reveals the invite. A reload in the same tab skips the doors.
+On first visit, guests see an emerald velvet gatefold sealed with a lace-edged "T & U" monogram. Tapping the seal lifts it away, swings the panels open, starts the music and reveals the invite (a **Skip** button opens it instantly). A reload in the same tab skips the opening.
 
 ## Edit the content
 
@@ -87,7 +87,7 @@ src/content.js             ← all text, details and photo choices
 src/render.js              markup templates (pure functions)
 src/generated/images.js    image manifest (generated)
 src/lib/arch.js            scalloped jharokha arch generator (SVG paths)
-src/lib/doors.js           carved palace doors for the opening (SVG)
+src/lib/doors.js           velvet gatefold panels and monogram seal for the opening (SVG)
 src/lib/ornaments.js       lotus, filigree, finial and icons (SVG sprite)
 src/style.css              design system, sections and motion
 src/main.js                doors, reveals, parallax, timeline, carousel, countdown, music, Lenis

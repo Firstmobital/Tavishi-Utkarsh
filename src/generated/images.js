@@ -13,48 +13,8 @@ export const images = {
     { w: 640, h: 961, src: '/images/couple/couple-portrait-640.webp' },
     { w: 1066, h: 1600, src: '/images/couple/couple-portrait-1066.webp' },
   ],
-  'venue/aerial-1': [
-    { w: 640, h: 356, src: '/images/venue/aerial-1-640.webp' },
-    { w: 1080, h: 600, src: '/images/venue/aerial-1-1080.webp' },
-  ],
-  'venue/aerial-2': [
-    { w: 640, h: 391, src: '/images/venue/aerial-2-640.webp' },
-    { w: 1080, h: 660, src: '/images/venue/aerial-2-1080.webp' },
-  ],
-  'venue/aerial-3': [
-    { w: 640, h: 356, src: '/images/venue/aerial-3-640.webp' },
-    { w: 1080, h: 600, src: '/images/venue/aerial-3-1080.webp' },
-  ],
-  'venue/floral-dome': [
-    { w: 640, h: 384, src: '/images/venue/floral-dome-640.webp' },
-    { w: 1080, h: 647, src: '/images/venue/floral-dome-1080.webp' },
-  ],
-  'venue/gazebo': [
-    { w: 640, h: 375, src: '/images/venue/gazebo-640.webp' },
-    { w: 1080, h: 634, src: '/images/venue/gazebo-1080.webp' },
-  ],
-  'venue/lounge-1': [
-    { w: 640, h: 356, src: '/images/venue/lounge-1-640.webp' },
-    { w: 1080, h: 600, src: '/images/venue/lounge-1-1080.webp' },
-  ],
-  'venue/lounge-2': [
-    { w: 640, h: 356, src: '/images/venue/lounge-2-640.webp' },
-    { w: 1080, h: 600, src: '/images/venue/lounge-2-1080.webp' },
-  ],
-  'venue/lounge-3': [
-    { w: 640, h: 356, src: '/images/venue/lounge-3-640.webp' },
-    { w: 1080, h: 600, src: '/images/venue/lounge-3-1080.webp' },
-  ],
-  'venue/pathway': [
-    { w: 640, h: 356, src: '/images/venue/pathway-640.webp' },
-    { w: 1080, h: 600, src: '/images/venue/pathway-1080.webp' },
-  ],
-  'venue/stage': [
-    { w: 640, h: 356, src: '/images/venue/stage-640.webp' },
-    { w: 1080, h: 600, src: '/images/venue/stage-1080.webp' },
-  ],
-  'venue/floral-dome-hero': [
-    { w: 540, h: 750, src: '/images/venue/floral-dome-hero-540.webp' },
-    { w: 777, h: 1079, src: '/images/venue/floral-dome-hero-777.webp' },
+  'couple/couple-dance-hero': [
+    { w: 540, h: 640, src: '/images/couple/couple-dance-hero-540.webp' },
+    { w: 900, h: 1066, src: '/images/couple/couple-dance-hero-900.webp' },
   ],
 };

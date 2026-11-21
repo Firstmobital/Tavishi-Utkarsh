@@ -464,6 +464,20 @@ function initCountdown() {
   timer = setInterval(tick, 1000);
 }
 
+/* ---------- cover images wait for the gate texture when the gate is showing ---------- */
+function initDeferred() {
+  const imgs = $$('img[data-defer]');
+  const load = () =>
+    imgs.forEach((img) => {
+      if (img.dataset.srcset) img.srcset = img.dataset.srcset;
+      img.src = img.dataset.src;
+    });
+  // gate showing: it covers the cover, so let the gate texture load first
+  if (!root.classList.contains('doors-up')) return load();
+  if (document.readyState === 'complete') load();
+  else window.addEventListener('load', load, { once: true });
+}
+
 /* ---------- cover depth: shrinks and dims as the haveli slides over ---------- */
 function initCoverDepth() {
   const cover = $('.cover');
@@ -498,6 +512,7 @@ function warnPlaceholders() {
 }
 
 /* ---------- boot ---------- */
+initDeferred();
 initDoors();
 initReveal();
 initHero();

@@ -230,16 +230,6 @@ async function art() {
   await mkdir(out(), { recursive: true });
   const src = (f) => path.join(root, 'assets/art', f);
   // cover: responsive sizes (it is the largest thing on the first screen)
-  // cover: banana leaves, pots and the brass elephant on cream paper. The paper
-  // (≈ 250,243,225) is brightened to white so, multiplied over the woven canvas
-  // in CSS, it disappears and only the drawn elements remain.
-  for (const w of [480, 675]) {
-    await sharp(src('cover-banana.jpg'))
-      .resize({ width: w })
-      .linear([255 / 250, 255 / 243, 255 / 225], [0, 0, 0])
-      .webp({ quality: 70, effort: 6 })
-      .toFile(out(`cover-banana-${w}.webp`));
-  }
   // haveli arch: the drawing's opening is centred at x≈359, not the image centre
   // (368), so crop it symmetrically around the arch (718px wide) before use
   await sharp(src('hero-arch.jpg')).extract({ left: 0, top: 0, width: 718, height: 1308 }).jpeg({ quality: 86, mozjpeg: true }).toFile(out('hero-arch.jpg'));
@@ -306,6 +296,10 @@ async function art() {
   };
   await cutout({ left: 650, top: 280, width: 475, height: 500 }, 'banana-flower.webp');
   await cutout({ left: 0, top: 1040, width: 1125, height: 960 }, 'garden-strip.webp');
+  // lighter copy of the garden for the cover (first screen loads it eagerly)
+  for (const w of [480, 720]) {
+    await sharp(out('garden-strip.webp')).resize({ width: w }).webp({ quality: 70, alphaQuality: 80, effort: 6 }).toFile(out(`garden-strip-${w}.webp`));
+  }
 }
 
 const [script, caps] = await Promise.all([

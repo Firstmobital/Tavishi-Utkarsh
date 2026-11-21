@@ -172,8 +172,10 @@ function hero(c) {
     html: `
   <div class="stack">
     <section class="cover" id="cover" aria-labelledby="cover-title">
-      <div class="cover__media">
-        <img class="cover__img" src="${esc(h.cover)}" srcset="${esc(h.coverSrcset)}" sizes="(min-width: 600px) 480px, 100vw" width="${h.coverSize[0]}" height="${h.coverSize[1]}" alt="${esc(h.coverAlt)}" fetchpriority="high" decoding="async">
+      <div class="cover__media" role="img" aria-label="${esc(h.coverAlt)}">
+        <img class="cover__flower" data-defer data-src="/images/art/banana-flower.webp" width="475" height="500" alt="" decoding="async">
+        <img class="cover__garden" data-defer data-src="/images/art/garden-strip-720.webp" data-srcset="/images/art/garden-strip-480.webp 480w, /images/art/garden-strip-720.webp 720w" sizes="(min-width: 600px) 480px, 100vw" width="720" height="614" alt="" decoding="async">
+        <noscript><img class="cover__flower" src="/images/art/banana-flower.webp" width="475" height="500" alt=""><img class="cover__garden" src="/images/art/garden-strip-720.webp" width="720" height="614" alt=""></noscript>
       </div>
       <div class="cover__dim" aria-hidden="true"></div>
       <div class="petals" aria-hidden="true"></div>
@@ -607,10 +609,14 @@ export function renderHead(c, { siteUrl = '' } = {}) {
 
     <link rel="preload" href="/fonts/PinyonScript-400.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/fonts/CormorantGaramond-var.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" as="image" href="${esc(c.hero.cover)}" imagesrcset="${esc(c.hero.coverSrcset)}" imagesizes="(min-width: 600px) 480px, 100vw" fetchpriority="high">
     <style>${FONT_FACES}
 :root{--arch-mask:${archMaskCss()}}</style>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="${esc(fontsHindi)}" media="print" onload="this.media='all'">
-    <script>(function(d){d.classList.add('js');try{if(!sessionStorage.getItem('tu-doors'))d.classList.add('doors-up')}catch(e){d.classList.add('doors-up')}})(document.documentElement)</script>`;
+    <script>(function(d){d.classList.add('js');try{if(!sessionStorage.getItem('tu-doors'))d.classList.add('doors-up')}catch(e){d.classList.add('doors-up')}
+/* preload whatever the guest sees first: the gate texture, or the cover garden when the gate is skipped */
+var l=document.createElement('link');l.rel='preload';l.as='image';l.fetchPriority='high';
+if(d.classList.contains('doors-up')){l.href='/images/art/lotus-emboss.webp'}else{l.href='/images/art/garden-strip-720.webp';l.imageSrcset='/images/art/garden-strip-480.webp 480w, /images/art/garden-strip-720.webp 720w';l.imageSizes='(min-width: 600px) 480px, 100vw'}
+document.head.appendChild(l)})(document.documentElement)</script>
+`;
 }

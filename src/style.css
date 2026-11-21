@@ -907,18 +907,19 @@ html.lenis body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 0 14% 4vh;
+  justify-content: flex-start;
+  /* centred in the open space: left of the banana leaves, above the pots */
+  padding: calc(max(13vh, 84px) + env(safe-area-inset-top)) 30% 0 4%;
   text-align: center;
 }
 
 .cover .scroll-cue {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: calc(14px + env(safe-area-inset-bottom));
+  left: auto;
+  right: 9%;
+  bottom: calc(22px + env(safe-area-inset-bottom));
   z-index: 2;
-  margin: 0 auto;
+  margin: 0;
   width: max-content;
   padding: 6px 14px 2px;
   border-radius: 999px;

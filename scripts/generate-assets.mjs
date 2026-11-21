@@ -230,14 +230,15 @@ async function art() {
   await mkdir(out(), { recursive: true });
   const src = (f) => path.join(root, 'assets/art', f);
   // cover: responsive sizes (it is the largest thing on the first screen)
-  for (const w of [480, 768]) {
-    // brighten the cream wall (≈ 234,226,219) to white so, multiplied over the
-    // woven canvas in CSS, the wall disappears and only the décor remains
-    await sharp(src('garland-lamps.webp'))
+  // cover: banana leaves, pots and the brass elephant on cream paper. The paper
+  // (≈ 250,243,225) is brightened to white so, multiplied over the woven canvas
+  // in CSS, it disappears and only the drawn elements remain.
+  for (const w of [480, 675]) {
+    await sharp(src('cover-banana.jpg'))
       .resize({ width: w })
-      .linear([255 / 234, 255 / 226, 255 / 219], [0, 0, 0])
-      .webp({ quality: 68, effort: 6 })
-      .toFile(out(`cover-lamps-${w}.webp`));
+      .linear([255 / 250, 255 / 243, 255 / 225], [0, 0, 0])
+      .webp({ quality: 70, effort: 6 })
+      .toFile(out(`cover-banana-${w}.webp`));
   }
   // haveli arch: the drawing's opening is centred at x≈359, not the image centre
   // (368), so crop it symmetrically around the arch (718px wide) before use

@@ -245,6 +245,26 @@ html.lenis body {
   color: var(--text);
 }
 
+.theme-paper {
+  --text: var(--maroon);
+  --text-soft: var(--maroon-2);
+  --heading: var(--maroon);
+  --label: var(--gold-deep);
+  --line: var(--gold-2);
+  background: #faf5e4 url('/images/art/paper.webp') center / cover;
+  color: var(--text);
+}
+
+.theme-maroon,
+.theme-velvet {
+  --text: var(--cream);
+  --text-soft: var(--cream-2);
+  --heading: var(--gold-light);
+  --label: #e3c78f;
+  --line: var(--gold);
+  color: var(--text);
+}
+
 .theme-emerald {
   --text: var(--cream);
   --text-soft: var(--cream-2);
@@ -291,10 +311,10 @@ html.lenis body {
 /* ---------- section dividers ---------- */
 .edge {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   height: 30px;
-  margin: -1px 0;
-  background: var(--from);
+  margin: -30px 0 0;
+  pointer-events: none;
 }
 
 .edge svg {
@@ -305,6 +325,7 @@ html.lenis body {
 
 .edge--filigree {
   height: 44px;
+  margin-top: -44px;
 }
 
 .edge__lotus {
@@ -656,7 +677,7 @@ html.lenis body {
   top: 0;
   bottom: 0;
   width: 200%;
-  background: url('/images/texture/lotus-panel.webp') center / cover no-repeat;
+  background: url('/images/art/lotus-emboss.webp') center / cover no-repeat;
 }
 
 .doors__leaf--l .doors__tex {
@@ -913,7 +934,7 @@ html.lenis body {
   z-index: -2;
   background:
     radial-gradient(ellipse 70% 40% at 50% 26%, rgba(5, 26, 20, 0.55), transparent 70%),
-    linear-gradient(0deg, var(--ivory) 0%, rgba(251, 245, 238, 0.85) 4%, rgba(251, 245, 238, 0) 13%);
+    linear-gradient(0deg, #b18d81 0%, rgba(177, 141, 129, 0.85) 4%, rgba(177, 141, 129, 0) 13%);
 }
 
 .hero__frame {
@@ -1135,32 +1156,33 @@ html.lenis body {
 }
 
 /* ==========================================================
-   2. INVITATION (ivory)
+   2. INVITATION — inside the Mughal arch artwork
+   The image is 9-sliced with border-image: the arch top and the garden
+   stay intact, and the pillars repeat to fit however long the text is.
    ========================================================== */
 .section--invite {
-  padding-top: var(--space-6);
+  position: relative;
+  background: #b18d81;
+  text-align: center;
+  color: var(--maroon);
+  --text-soft: var(--maroon-2);
 }
 
-.invite {
-  max-width: 420px;
-  margin: 0 auto;
+.mughal {
+  --s: calc(var(--colw) / 1125);
+  border-style: solid;
+  border-width: calc(700 * var(--s)) calc(150 * var(--s)) calc(710 * var(--s));
+  border-image: url('/images/art/mughal-arch.webp') 700 150 710 fill round;
 }
 
-.invite::before {
-  content: '';
-  position: absolute;
-  inset: 25% 6% 0;
-  border-radius: 40px;
-  box-shadow: 0 30px 60px -30px rgba(74, 35, 32, 0.4);
-}
-
-.invite__content {
-  padding-left: var(--space-5);
-  padding-right: var(--space-5);
+.mughal__content {
+  margin-top: calc(-430 * var(--s));
+  margin-bottom: calc(-60 * var(--s));
+  padding: 0 var(--space-3);
 }
 
 .invocation {
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-3);
   font-family: var(--f-hindi);
   font-weight: 500;
   font-size: 19px;
@@ -1182,15 +1204,15 @@ html.lenis body {
 }
 
 .name-script {
-  margin-top: var(--space-4);
+  margin-top: var(--space-3);
   font-family: var(--f-script);
-  font-size: clamp(56px, 16vw, 68px);
+  font-size: clamp(50px, 14vw, 62px);
   line-height: 1.1;
   color: var(--gold-deep);
 }
 
 .invite__parent {
-  font-size: 18px;
+  font-size: 17px;
   line-height: 1.45;
   color: var(--text-soft);
 }
@@ -1805,6 +1827,32 @@ html.lenis body {
 /* ==========================================================
    6. FAMILY (ivory)
    ========================================================== */
+.section--family {
+  padding-top: calc(var(--space-8) + 92px);
+  padding-bottom: 0;
+  overflow: hidden;
+}
+
+.family__flower {
+  position: absolute;
+  top: -8px;
+  right: -30px;
+  width: 132px;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(ellipse at 62% 50%, #000 52%, transparent 72%);
+  mask-image: radial-gradient(ellipse at 62% 50%, #000 52%, transparent 72%);
+}
+
+.family__garden {
+  display: block;
+  width: calc(100% + var(--pad) * 2);
+  max-width: none;
+  margin: calc(var(--space-6) * -1) calc(var(--pad) * -1) 0;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 18%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 18%);
+  pointer-events: none;
+}
+
 .family {
   max-width: 380px;
   margin: 0 auto;
@@ -1834,7 +1882,7 @@ html.lenis body {
   padding: var(--space-5) var(--space-4);
   border: 1px solid rgba(201, 164, 92, 0.6);
   border-radius: 22px;
-  background: var(--blush-2);
+  background: rgba(248, 230, 231, 0.88);
   box-shadow: inset 0 0 0 4px var(--blush-2), inset 0 0 0 5px rgba(201, 164, 92, 0.3);
 }
 
@@ -1928,6 +1976,12 @@ html.lenis body {
 /* ==========================================================
    8. COUNTDOWN (emerald)
    ========================================================== */
+.section--countdown {
+  min-height: calc(var(--colw) * 2000 / 1125);
+  padding: calc(var(--colw) * 0.53) calc(var(--colw) * 0.13) var(--space-8);
+  background: #431a1a url('/images/art/lantern-arch.webp') top center / 100% auto no-repeat;
+}
+
 .countdown__text {
   max-width: 360px;
   margin: 0 auto var(--space-6);
@@ -1939,7 +1993,7 @@ html.lenis body {
 .tiles {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  gap: 8px;
   max-width: 380px;
   margin: 0 auto;
 }
@@ -1951,9 +2005,9 @@ html.lenis body {
   padding: 20px 2px 12px;
   border: 1px solid var(--gold);
   border-radius: 60px 60px 12px 12px;
-  background: rgba(7, 32, 25, 0.55);
+  background: rgba(40, 8, 12, 0.5);
   box-shadow:
-    inset 0 0 0 4px rgba(7, 32, 25, 0.9),
+    inset 0 0 0 4px rgba(40, 8, 12, 0.85),
     inset 0 0 0 5px rgba(201, 164, 92, 0.35);
 }
 
@@ -2006,43 +2060,24 @@ html.lenis body {
    ========================================================== */
 .closing {
   position: relative;
+  display: flex;
+  align-items: center;
+  min-height: calc(var(--colw) * 1308 / 736);
   overflow: hidden;
   text-align: center;
-  background: var(--emerald-deep);
+  background: #420b0f url('/images/art/lotus-border.jpg') left top / cover no-repeat;
 }
 
-.closing__media {
-  position: relative;
-  aspect-ratio: 4 / 4.4;
-  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 58%, transparent 96%);
-  mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 58%, transparent 96%);
-}
-
-.closing__img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% 55%;
-}
-
+/* the sign-off sits on the plain velvet, beside the lotus vine */
 .closing__text {
   position: relative;
-  margin-top: -30%;
-  padding: 0 var(--pad) var(--space-8);
-}
-
-.closing--plain .closing__text {
-  margin-top: 0;
-  padding-top: var(--space-8);
-}
-
-.petals--closing {
-  z-index: 0;
+  width: 100%;
+  padding: var(--space-7) 5% var(--space-7) 40%;
 }
 
 .closing__signoff {
   font-family: var(--f-script);
-  font-size: clamp(44px, 12vw, 54px);
+  font-size: clamp(40px, 11vw, 50px);
   line-height: 1.2;
 }
 
@@ -2080,7 +2115,7 @@ html.lenis body {
 .footer {
   padding: var(--space-5) var(--pad) calc(var(--space-6) + env(safe-area-inset-bottom));
   border-top: 1px solid rgba(201, 164, 92, 0.35);
-  background: var(--emerald-ink);
+  background: #2a070b;
   text-align: center;
   font-family: var(--f-caps);
   font-size: 12px;

@@ -86,12 +86,18 @@ const photoOuter = archPath({ W: PHOTO.W, topH: PHOTO.top, bottom: PHOTO.H + 8, 
 const windowLine = archPath({ W: WINDOW.W, topH: WINDOW.top, bottom: WINDOW.H, closed: true });
 
 /* ---------- section dividers ---------- */
-// colour at the bottom (from) / top (to) of each themed section
-const BOTTOM = { ivory: '#FBF5EE', emerald: '#0B2E23', blush: '#F3D9DC', photo: '#0B2E23' };
-const TOP = { ivory: '#FBF5EE', emerald: '#0F3D2E', blush: '#F3D9DC', photo: '#0B2E23' };
+// colour at the top of each themed section (what a divider is filled with)
+const TOP = {
+  ivory: '#FBF5EE',
+  emerald: '#0F3D2E',
+  blush: '#F3D9DC',
+  paper: '#FAF5E4',
+  maroon: '#6F1025',
+  velvet: '#54111A',
+};
 
 /** A row of scalloped jharokha arches rising into the previous section. */
-function arcadeEdge(from, to) {
+function arcadeEdge(to) {
   const n = 9;
   const w = 400 / n;
   let fillD = 'M0 30';
@@ -102,7 +108,7 @@ function arcadeEdge(from, to) {
     lineD += i === 0 ? d : d.replace(/^M/, 'L');
   }
   fillD += 'L400 30Z';
-  return `<div class="edge edge--arcade" aria-hidden="true" style="--from:${BOTTOM[from]};--to:${TOP[to]}">
+  return `<div class="edge edge--arcade" aria-hidden="true" style="--to:${TOP[to]}">
     <svg viewBox="0 0 400 30" preserveAspectRatio="none" focusable="false">
       <path d="${fillD}" fill="var(--to)"/>
       <path d="${lineD}" fill="none" stroke="#C9A45C" stroke-width="1" vector-effect="non-scaling-stroke"/>
@@ -111,8 +117,8 @@ function arcadeEdge(from, to) {
 }
 
 /** A soft rising curve with a gold filigree line and a lotus medallion. */
-function filigreeEdge(from, to) {
-  return `<div class="edge edge--filigree" aria-hidden="true" style="--from:${BOTTOM[from]};--to:${TOP[to]}">
+function filigreeEdge(to) {
+  return `<div class="edge edge--filigree" aria-hidden="true" style="--to:${TOP[to]}">
     <svg viewBox="0 0 400 44" preserveAspectRatio="none" focusable="false">
       <path d="M0 44V30C110 30 150 12 200 12S290 30 400 30V44Z" fill="var(--to)"/>
       <path d="M0 30C110 30 150 12 200 12S290 30 400 30" fill="none" stroke="#C9A45C" stroke-width="1" vector-effect="non-scaling-stroke"/>
@@ -122,7 +128,7 @@ function filigreeEdge(from, to) {
   </div>`;
 }
 
-const edgeBetween = (from, to) => (to === 'emerald' ? arcadeEdge(from, to) : filigreeEdge(from, to));
+const edgeBetween = (from, to) => (to === 'emerald' || to === 'maroon' ? arcadeEdge(to) : filigreeEdge(to));
 
 /* ---------- section pieces ---------- */
 const sectionHead = (eyebrow, title, sub = '', id = '') => `
@@ -187,15 +193,12 @@ function hero(c) {
 function invitation(c) {
   const v = c.invitation;
   return {
-    theme: 'ivory',
+    theme: 'mughal',
     html: `
-  <section class="section theme-ivory section--invite" id="invitation" aria-labelledby="invite-title">
+  <section class="section--invite" id="invitation" aria-labelledby="invite-title">
     <h2 class="visually-hidden" id="invite-title">Wedding invitation</h2>
-    <div class="arch-card invite">
-      ${archLayers({ inset: 6 })}
-      ${use('o-filigree', 'corner corner--bl')}
-      ${use('o-filigree', 'corner corner--br')}
-      <div class="arch-card__content invite__content">
+    <div class="mughal">
+      <div class="mughal__content">
         <p class="invocation reveal" lang="hi">${esc(v.invocation)}</p>
         <p class="invite__text reveal">${lines(v.blessing)}</p>
         <p class="invite__hosts reveal">${names(v.hosts)}</p>
@@ -205,7 +208,6 @@ function invitation(c) {
         <p class="invite__with reveal">${esc(v.connector)}</p>
         <p class="name-script reveal reveal--script">${esc(v.groom.name)}</p>
         <p class="invite__parent reveal">${lines(v.groom.lines)}</p>
-        <div class="reveal">${divider('divider--small')}</div>
       </div>
     </div>
   </section>`,
@@ -427,11 +429,13 @@ function family(c) {
     })
     .join('');
   return {
-    theme: 'ivory',
+    theme: 'paper',
     html: `
-  <section class="section theme-ivory section--family" id="family" aria-labelledby="family-title">
+  <section class="section theme-paper section--family" id="family" aria-labelledby="family-title">
+    <img class="family__flower" src="/images/art/banana-flower.webp" alt="" width="475" height="500" loading="lazy" decoding="async">
     ${sectionHead(f.eyebrow, f.title, '', 'family-title')}
     <div class="family">${groups}</div>
+    <img class="family__garden" src="/images/art/garden-strip.webp" alt="" width="1125" height="960" loading="lazy" decoding="async">
   </section>`,
   };
 }
@@ -480,9 +484,9 @@ function countdown(c) {
     )
     .join('');
   return {
-    theme: 'emerald',
+    theme: 'maroon',
     html: `
-  <section class="section theme-emerald section--countdown" id="countdown" aria-labelledby="countdown-title">
+  <section class="section theme-maroon section--countdown" id="countdown" aria-labelledby="countdown-title">
     <div class="countdown" data-target="${esc(k.target)}">
       <h2 class="script-title reveal reveal--script" id="countdown-title">${esc(k.title)}</h2>
       <div class="reveal">${divider('divider--light')}</div>
@@ -494,14 +498,13 @@ function countdown(c) {
   };
 }
 
-function closing(c, venue) {
+function closing(c) {
   const x = c.closing;
-  const petals = Array.from({ length: 11 }, (_, i) => `<i style="--r:${(i * 47) % 90 - 45}deg;--o:${0.55 + ((i * 13) % 40) / 100}"></i>`).join('');
+  const petals = Array.from({ length: 9 }, (_, i) => `<i style="--r:${(i * 47) % 90 - 45}deg;--o:${0.55 + ((i * 13) % 40) / 100}"></i>`).join('');
   return {
-    theme: 'emerald',
+    theme: 'velvet',
     html: `
-  <section class="closing theme-emerald${venue ? '' : ' closing--plain'}" aria-label="Closing note">
-    ${venue ? `<div class="closing__media">${img(x.image, { alt: x.imageAlt, sizes: '(min-width: 600px) 480px, 100vw', cls: 'closing__img' })}</div>` : '<div class="petals petals--closing" aria-hidden="true"></div>'}
+  <section class="closing theme-velvet" aria-label="Closing note">
     <div class="closing__text">
       <p class="closing__signoff foil reveal reveal--script" data-text="${esc(x.signoff)}">${esc(x.signoff)}</p>
       <div class="reveal">${divider('divider--light divider--small')}</div>
@@ -545,13 +548,13 @@ export function renderBody(c) {
     family(c),
     rsvp(c),
     countdown(c),
-    closing(c, venue),
+    closing(c),
   ];
   let html = '';
   sections.forEach((s, i) => {
     const prev = sections[i - 1];
-    // the hero photo fades into the invitation itself, so no edge there
-    if (prev && prev.theme !== 'photo' && prev.theme !== s.theme) html += edgeBetween(prev.theme, s.theme);
+    // the hero photo fades straight into the Mughal arch, so no edge there
+    if (prev && TOP[s.theme] && prev.theme !== s.theme) html += edgeBetween(prev.theme, s.theme);
     html += s.html;
   });
 

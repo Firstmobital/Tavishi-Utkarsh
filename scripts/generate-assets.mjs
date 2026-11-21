@@ -231,150 +231,27 @@ async function favicon(script, caps) {
   await sharp(Buffer.from(svg), { density: 600 }).resize(180, 180).png().toFile(pub('apple-touch-icon.png'));
 }
 
-/* ---------- debossed lotus suede for the opening gatefold ---------- */
-// One portrait panel that spans both doors: original lotus, bud and leaf
-// line art pressed into dark grey-green suede. Each shape gets an opaque
-// tonal fill, a faint raised highlight and a dark groove; mottling and fine
-// grain sit over everything.
-async function lotusPanel() {
-  const W = 960;
-  const H = 1920;
-  let seed = 160127;
-  const rand = () => {
-    seed = (seed * 1664525 + 1013904223) >>> 0;
-    return seed / 4294967296;
-  };
-  const f = (v) => v.toFixed(1);
-  const rot = (x, y, a) => [x * Math.cos(a) - y * Math.sin(a), x * Math.sin(a) + y * Math.cos(a)];
-  const shapes = []; // { d, fill, groove? }
-  const tone = () => {
-    const t = 32 + Math.round(rand() * 10);
-    return `rgb(${t},${t + 6},${t - 2})`;
-  };
-
-  // petal: teardrop from the base point outwards along angle a
-  const petal = (bx, by, len, wid, a, curl = 0) => {
-    const P = (x, y) => {
-      const [rx, ry] = rot(x, y, a);
-      return `${f(bx + rx)} ${f(by + ry)}`;
-    };
-    return `M${P(0, 0)}C${P(-wid, -len * 0.3)} ${P(-wid * (0.9 + curl), -len * 0.82)} ${P(curl * wid * 0.4, -len)}C${P(wid * (0.9 - curl), -len * 0.82)} ${P(wid, -len * 0.3)} ${P(0, 0)}Z`;
-  };
-  const vein = (bx, by, len, a, k = 0.75) => {
-    const [x1, y1] = rot(0, -len * 0.12, a);
-    const [x2, y2] = rot(0, -len * k, a);
-    return `M${f(bx + x1)} ${f(by + y1)}L${f(bx + x2)} ${f(by + y2)}`;
-  };
-
-  function lotus(cx, cy, r, a) {
-    const back = 7;
-    for (let i = 0; i < back; i++) {
-      const ang = a + (-1.25 + (2.5 * i) / (back - 1));
-      const len = r * (0.82 + rand() * 0.18);
-      shapes.push({ d: petal(cx, cy, len, r * 0.4, ang, (rand() - 0.5) * 0.3), fill: tone(), extra: vein(cx, cy, len, ang, 0.55) });
-    }
-    const front = 5;
-    for (let i = 0; i < front; i++) {
-      const ang = a + (-0.85 + (1.7 * i) / (front - 1));
-      const len = r * (0.62 + rand() * 0.14);
-      shapes.push({ d: petal(cx, cy + r * 0.06, len, r * 0.36, ang, (rand() - 0.5) * 0.4), fill: tone(), extra: vein(cx, cy + r * 0.06, len, ang, 0.5) });
-    }
-    // seed pod: a cup with dotted top
-    const [px, py] = rot(0, -r * 0.3, a);
-    let dots = '';
-    for (let i = 0; i < 18; i++) {
-      const t = rand() * Math.PI * 2;
-      const d = Math.sqrt(rand());
-      dots += `M${f(cx + px + Math.cos(t) * r * 0.16 * d - 3)} ${f(cy + py + Math.sin(t) * r * 0.09 * d)}a3 3 0 1 0 6 0a3 3 0 1 0 -6 0`;
-    }
-    shapes.push({ d: `M${f(cx + px - r * 0.2)} ${f(cy + py)}Q${f(cx + px)} ${f(cy + py + r * 0.28)} ${f(cx + px + r * 0.2)} ${f(cy + py)}Q${f(cx + px)} ${f(cy + py - r * 0.12)} ${f(cx + px - r * 0.2)} ${f(cy + py)}Z`, fill: tone(), extra: dots });
-  }
-
-  function bud(cx, cy, r, a) {
-    for (const k of [-0.35, 0.35, 0]) {
-      shapes.push({ d: petal(cx, cy, r, r * 0.34, a + k, k * 0.3), fill: tone(), extra: vein(cx, cy, r, a + k, 0.6) });
+/* ---------- the family's own artwork (assets/art) ---------- */
+// Used as-is. Files are only re-encoded if they exceed the 300 KB budget,
+// and the paper-garden artwork is cut into its separate elements.
+async function art() {
+  const out = (...p) => pub('images/art', ...p);
+  await rm(pub('images/texture'), { recursive: true, force: true });
+  await rm(out(), { recursive: true, force: true });
+  await mkdir(out(), { recursive: true });
+  const src = (f) => path.join(root, 'assets/art', f);
+  for (const f of ['lotus-emboss.webp', 'lantern-arch.webp', 'mughal-arch.webp', 'lotus-border.jpg']) {
+    const { size } = await stat(src(f));
+    if (size <= 300 * 1024) {
+      await writeFile(out(f), await readFile(src(f)));
+    } else {
+      await sharp(src(f)).webp({ quality: 82 }).toFile(out(f));
     }
   }
-
-  function leaf(x, y, len, a, wid = 0.36) {
-    const P = (u, v) => {
-      const [rx, ry] = rot(u, v, a);
-      return `${f(x + rx)} ${f(y + ry)}`;
-    };
-    const w = len * wid;
-    const d = `M${P(0, 0)}C${P(-w, -len * 0.25)} ${P(-w * 0.8, -len * 0.8)} ${P(0, -len)}C${P(w * 0.85, -len * 0.75)} ${P(w, -len * 0.22)} ${P(0, 0)}Z`;
-    let veins = `M${P(0, 0)}Q${P(w * 0.08, -len * 0.5)} ${P(0, -len * 0.94)}`;
-    for (let i = 1; i <= 4; i++) {
-      const t = i / 5.2;
-      veins += `M${P(0, -len * t)}Q${P(-w * 0.45, -len * (t + 0.05))} ${P(-w * 0.72, -len * (t + 0.16))}`;
-      veins += `M${P(0, -len * t)}Q${P(w * 0.45, -len * (t + 0.05))} ${P(w * 0.74, -len * (t + 0.15))}`;
-    }
-    shapes.push({ d, fill: tone(), extra: veins });
-  }
-
-  const stem = (pts) => shapes.push({ d: `M${pts[0]}C${pts[1]} ${pts[2]} ${pts[3]}`, fill: 'none', w: 8 });
-
-  // composition (back to front): big, overlapping blooms and leaves
-  stem(['60 1920', '180 1560', '380 1300', '470 1060']);
-  stem(['960 1760', '800 1560', '720 1360', '690 1240']);
-  stem(['0 640', '150 560', '230 460', '280 380']);
-  stem(['960 900', '880 820', '830 720', '800 640']);
-  leaf(-80, 1060, 560, 0.95, 0.42);
-  leaf(1040, 420, 520, -1.05, 0.44);
-  leaf(220, 1700, 520, -0.6, 0.42);
-  leaf(760, 1990, 560, 0.45, 0.42);
-  leaf(980, 1260, 480, -1.0, 0.42);
-  leaf(60, 860, 420, -0.35, 0.42);
-  leaf(600, 520, 440, 0.75, 0.42);
-  leaf(380, 2060, 460, -0.2, 0.42);
-  leaf(1010, 1640, 420, -1.25, 0.42);
-  leaf(-40, 300, 380, 0.6, 0.42);
-  leaf(470, 1290, 380, 1.4, 0.4);
-  lotus(300, 330, 330, -0.25);
-  lotus(560, 1030, 400, 0.05);
-  lotus(860, 600, 280, 0.45);
-  lotus(210, 1520, 340, -0.35);
-  lotus(780, 1720, 330, 0.3);
-  bud(70, 170, 190, -0.6);
-  bud(900, 1180, 180, 0.55);
-  bud(450, 1860, 170, 0.15);
-  bud(700, 120, 160, 0.3);
-
-  const body = shapes
-    .map(({ d, fill, extra = '', w = 6.5 }) => {
-      const hi = `<path d="${d}${extra ? extra : ''}" fill="none" stroke="rgba(170,184,156,.4)" stroke-width="${w * 0.6}" transform="translate(-3.2 -3.8)"/>`;
-      const fillP = fill === 'none' ? '' : `<path d="${d}" fill="${fill}"/>`;
-      const groove = `<path d="${d}${extra}" fill="none" stroke="#0B0F0A" stroke-opacity=".92" stroke-width="${w}"/>`;
-      const shade = `<path d="${d}${extra}" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="${w * 0.8}" transform="translate(2.6 3.2)"/>`;
-      return fillP + shade + hi + groove;
-    })
-    .join('');
-
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
-    <filter id="mottle"><feTurbulence type="fractalNoise" baseFrequency=".004 .006" numOctaves="3" seed="9"/><feColorMatrix values="0 0 0 0 .02  0 0 0 0 .04  0 0 0 0 .02  0 0 0 .5 -.12"/></filter>
-    <filter id="light"><feTurbulence type="fractalNoise" baseFrequency=".008" numOctaves="2" seed="21"/><feColorMatrix values="0 0 0 0 .5  0 0 0 0 .55  0 0 0 0 .48  0 0 0 .5 -.2"/></filter>
-    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".55" numOctaves="3" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 .5  0 0 0 0 .56  0 0 0 0 .48  0 0 0 .16 0"/></filter>
-    <radialGradient id="vig" cx="50%" cy="48%" r="75%"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></radialGradient>
-    <filter id="wobble" x="-2%" y="-2%" width="104%" height="104%">
-      <feTurbulence type="fractalNoise" baseFrequency=".018" numOctaves="2" seed="3" result="w"/>
-      <feDisplacementMap in="SourceGraphic" in2="w" scale="7" xChannelSelector="R" yChannelSelector="G" result="d1"/>
-      <feTurbulence type="fractalNoise" baseFrequency=".35" numOctaves="1" seed="5" result="r"/>
-      <feDisplacementMap in="d1" in2="r" scale="2.2" xChannelSelector="R" yChannelSelector="G"/>
-    </filter>
-    <filter id="crinkle"><feTurbulence type="fractalNoise" baseFrequency=".09 .12" numOctaves="3" seed="12"/><feColorMatrix values="0 0 0 0 .55  0 0 0 0 .6  0 0 0 0 .52  0 0 0 .32 -.13"/></filter>
-    <filter id="crinkleDark"><feTurbulence type="fractalNoise" baseFrequency=".12 .09" numOctaves="3" seed="31"/><feColorMatrix values="0 0 0 0 0  0 0 0 0 .02  0 0 0 0 0  0 0 0 .4 -.16"/></filter>
-    <rect width="${W}" height="${H}" fill="rgb(38,44,36)"/>
-    <g stroke-linecap="round" stroke-linejoin="round" filter="url(#wobble)">${body}</g>
-    <rect width="${W}" height="${H}" filter="url(#crinkle)"/>
-    <rect width="${W}" height="${H}" filter="url(#crinkleDark)"/>
-    <rect width="${W}" height="${H}" filter="url(#light)"/>
-    <rect width="${W}" height="${H}" filter="url(#mottle)"/>
-    <rect width="${W}" height="${H}" filter="url(#grain)"/>
-    <rect width="${W}" height="${H}" fill="url(#vig)"/>
-  </svg>`;
-  await mkdir(pub('images/texture'), { recursive: true });
-  await rm(pub('images/texture/velvet.webp'), { force: true });
-  await sharp(Buffer.from(svg)).blur(0.45).linear([0.74, 0.75, 0.73], [0, 0, 0]).webp({ quality: 80 }).toFile(pub('images/texture/lotus-panel.webp'));
+  const paper = src('paper-garden.webp');
+  await sharp(paper).extract({ left: 0, top: 0, width: 620, height: 1000 }).webp({ quality: 80 }).toFile(out('paper.webp'));
+  await sharp(paper).extract({ left: 650, top: 280, width: 475, height: 500 }).webp({ quality: 82 }).toFile(out('banana-flower.webp'));
+  await sharp(paper).extract({ left: 0, top: 1040, width: 1125, height: 960 }).webp({ quality: 82 }).toFile(out('garden-strip.webp'));
 }
 
 const [script, caps] = await Promise.all([
@@ -383,7 +260,7 @@ const [script, caps] = await Promise.all([
 ]);
 await variants();
 await hero();
-await lotusPanel();
+await art();
 await writeManifest();
 await ogImage(script, caps);
 await favicon(script, caps);

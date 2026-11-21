@@ -158,6 +158,7 @@ html.lenis body {
 .page {
   position: relative;
   overflow: hidden;
+  overflow: clip; /* clips like hidden, but keeps position: sticky working */
   background: var(--ivory);
 }
 
@@ -843,13 +844,85 @@ html.lenis body {
 /* ==========================================================
    1. HERO
    ========================================================== */
-.hero {
+/* the cover stays pinned while the haveli page slides up over it */
+.stack {
   position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  background: #f6e4d6;
+}
+
+.cover,
+.haveli {
   color: var(--maroon);
   --text-soft: var(--maroon-2);
+}
+
+.cover {
+  position: sticky;
+  top: 0;
+  z-index: 0;
+  height: 100vh;
+  height: 100svh;
+  min-height: 560px;
+  overflow: hidden;
+  isolation: isolate;
+  background: #f0e3d5;
+}
+
+@media (min-width: 600px) {
+  .cover {
+    height: min(100vh, 940px);
+  }
+}
+
+.cover__media {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  transform-origin: 50% 30%;
+  transform: scale(calc(1 - var(--p, 0) * 0.06));
+}
+
+.cover__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 30%;
+}
+
+/* darkens as the haveli rises over it, for depth */
+.cover__dim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: #1c0f0c;
+  opacity: calc(var(--p, 0) * 0.45);
+  pointer-events: none;
+}
+
+.cover__content {
+  position: relative;
+  z-index: 2;
+  padding: calc(max(11vh, 76px) + env(safe-area-inset-top)) 14% 0;
+  text-align: center;
+}
+
+.cover .scroll-cue {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(14px + env(safe-area-inset-bottom));
+  z-index: 2;
+  margin: 0 auto;
+  width: max-content;
+  padding: 6px 14px 2px;
+  border-radius: 999px;
+  background: rgba(251, 245, 238, 0.82);
+}
+
+.haveli {
+  position: relative;
+  z-index: 1;
+  background: #f6e4d6;
+  box-shadow: 0 -24px 40px -12px rgba(28, 15, 12, 0.45);
 }
 
 
@@ -862,8 +935,15 @@ html.lenis body {
   --s: calc(var(--colw) / 736);
   border-style: solid;
   border-width: calc(490 * var(--s)) calc(116 * var(--s)) calc(728 * var(--s)) calc(110 * var(--s));
-  border-image: url('/images/art/hero-arch.jpg') 490 116 728 110 fill stretch;
+  border-image-slice: 490 116 728 110 fill;
+  border-image-repeat: stretch;
+  border-image-source: none;
   text-align: center;
+}
+
+.haveli.is-near .scene,
+html:not(.js) .scene {
+  border-image-source: url('/images/art/hero-arch.jpg');
 }
 
 /* pull the text up into the arch crown and down to just above the couple */
@@ -872,28 +952,11 @@ html.lenis body {
   padding: 0 4px;
 }
 
-/* the first screen: names, date and a scroll cue; the invitation starts below the fold */
-.scene__intro {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: calc(100svh - var(--colw) * 0.3 - 230px);
-  padding-bottom: var(--space-5);
-}
-
-.scene__invite {
-  padding-bottom: var(--space-4);
-}
-
 /* the opening is narrow, so long host names may wrap inside it */
 .scene .invite__hosts .nw {
   white-space: normal;
 }
 
-.scene__invite .divider {
-  margin-top: 0;
-  margin-bottom: var(--space-5);
-}
 
 .hero__names {
   display: flex;
@@ -1057,7 +1120,7 @@ html.lenis body {
 }
 
 /* on the cover, petals fall through the first screen only */
-.hero .petals {
+.cover .petals {
   bottom: auto;
   height: 100vh;
   height: 100svh;
@@ -2346,4 +2409,35 @@ html:not(.js) .closing {
   .doors.is-opening {
     opacity: 0;
   }
+}
+
+/* keep the date row between the garlands on narrow phones */
+.cover .hero__date {
+  gap: calc(var(--colw) * 0.022);
+}
+
+.cover .hero__date span {
+  font-size: min(11.5px, calc(var(--colw) * 0.028));
+  letter-spacing: 0.2em;
+}
+
+.cover .hero__date b {
+  font-size: min(30px, calc(var(--colw) * 0.072));
+}
+
+.cover .hero__weekdays {
+  font-size: min(11px, calc(var(--colw) * 0.027));
+}
+
+/* a soft cream glow behind the names keeps them crisp over the garlands */
+.cover__content::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: 6%;
+  right: 6%;
+  top: calc(max(11vh, 76px) - 20px);
+  height: calc(var(--colw) * 0.82);
+  background: radial-gradient(ellipse at 50% 50%, rgba(246, 236, 222, 0.85) 30%, rgba(246, 236, 222, 0) 70%);
+  pointer-events: none;
 }

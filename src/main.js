@@ -256,10 +256,9 @@ function spawnStars(host, count) {
 }
 
 function initHero() {
-  const hero = $('.hero');
+  const hero = $('.cover');
   const phone = window.innerWidth <= 480;
-  spawnStars($('.hero .stars'), phone ? 22 : 30);
-  spawnPetals($('.hero .petals'), phone ? 14 : 18);
+  spawnPetals($('.cover .petals'), phone ? 14 : 18);
   spawnPetals($('.petals--closing'), phone ? 8 : 10);
   if (hero && hasIO) {
     new IntersectionObserver(([e]) => hero.classList.toggle('is-paused', !e.isIntersecting)).observe(hero);
@@ -465,6 +464,19 @@ function initCountdown() {
   timer = setInterval(tick, 1000);
 }
 
+/* ---------- cover depth: shrinks and dims as the haveli slides over ---------- */
+function initCoverDepth() {
+  const cover = $('.cover');
+  if (!cover || reduced) return;
+  let last = -1;
+  scrollSubs.add((vh) => {
+    const p = Math.max(0, Math.min(1, window.scrollY / vh));
+    if (Math.abs(p - last) < 0.004) return null;
+    last = p;
+    return () => cover.style.setProperty('--p', p.toFixed(3));
+  });
+}
+
 /* ---------- smooth wheel scrolling on desktop only ---------- */
 function initLenis() {
   if (reduced || !window.matchMedia('(pointer: fine) and (hover: hover)').matches) return;
@@ -494,6 +506,7 @@ initTimeline();
 initCarousel();
 initLightbox();
 initCountdown();
+initCoverDepth();
 initLenis();
 warnPlaceholders();
 onScroll();

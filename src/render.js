@@ -157,9 +157,11 @@ function doors(c) {
 }
 
 /**
- * Cover + invitation as ONE continuous scene inside the family's illustrated
- * palace arch: names in the arch crown, the invitation flowing down through
- * the stretched pillars, and the illustrated bride and groom at the foot.
+ * The opening pair, stacked:
+ *  1. the cover — the garland arch fills the first screen with the names, and
+ *     stays pinned while you scroll;
+ *  2. the haveli — the family's illustrated palace arch slides up over it,
+ *     carrying the invitation down to the illustrated bride and groom.
  */
 function hero(c) {
   const h = c.hero;
@@ -168,30 +170,35 @@ function hero(c) {
   return {
     theme: 'photo',
     html: `
-  <section class="hero" id="cover" aria-labelledby="cover-title">
-    <span class="visually-hidden" role="img" aria-label="${esc(h.imageAlt)}"></span>
-    <div class="petals" aria-hidden="true"></div>
-    <div class="scene">
-      <div class="scene__content">
-        <div class="scene__intro">
-          <p class="eyebrow hero__in" style="--i:0">${esc(h.preface)}</p>
-          <h1 class="hero__names" id="cover-title">
-            <span class="hero__name foil foil--deep hero__in" style="--i:1" data-text="${esc(c.couple.bride)}">${esc(c.couple.bride)}</span>
-            <span class="hero__weds hero__in" style="--i:2">${esc(h.weds)}</span>
-            <span class="hero__name foil foil--deep hero__in" style="--i:3" data-text="${esc(c.couple.groom)}">${esc(c.couple.groom)}</span>
-          </h1>
-          <p class="hero__date hero__in" style="--i:4" aria-label="${esc(h.dateLine)}, ${esc(h.city)}">
-            <span>${esc(dt.month)}</span><i aria-hidden="true"></i><b>${esc(dt.days)}</b><i aria-hidden="true"></i><span>${esc(dt.year)}</span>
-          </p>
-          <p class="hero__weekdays hero__in" style="--i:5">${esc(dt.weekdays)} <span aria-hidden="true">·</span> ${esc(h.city)}</p>
-          <p class="hero__tag hero__in" style="--i:6">${esc(c.hashtag)}</p>
-          <a class="scroll-cue hero__in" style="--i:7" href="#invitation" aria-label="Scroll to the invitation">
-            <span>${esc(h.scrollLabel)}</span>${use('i-chevron', 'scroll-cue__icon')}
-          </a>
-        </div>
-        <div class="scene__invite" id="invitation">
-          <h2 class="visually-hidden">Wedding invitation</h2>
-          <div class="reveal">${divider('divider--small')}</div>
+  <div class="stack">
+    <section class="cover" id="cover" aria-labelledby="cover-title">
+      <div class="cover__media">
+        <img class="cover__img" src="${esc(h.cover)}" srcset="${esc(h.coverSrcset)}" sizes="(min-width: 600px) 480px, 100vw" width="${h.coverSize[0]}" height="${h.coverSize[1]}" alt="${esc(h.coverAlt)}" fetchpriority="high" decoding="async">
+      </div>
+      <div class="cover__dim" aria-hidden="true"></div>
+      <div class="petals" aria-hidden="true"></div>
+      <div class="cover__content">
+        <p class="eyebrow hero__in" style="--i:0">${esc(h.preface)}</p>
+        <h1 class="hero__names" id="cover-title">
+          <span class="hero__name foil foil--deep hero__in" style="--i:1" data-text="${esc(c.couple.bride)}">${esc(c.couple.bride)}</span>
+          <span class="hero__weds hero__in" style="--i:2">${esc(h.weds)}</span>
+          <span class="hero__name foil foil--deep hero__in" style="--i:3" data-text="${esc(c.couple.groom)}">${esc(c.couple.groom)}</span>
+        </h1>
+        <p class="hero__date hero__in" style="--i:4" aria-label="${esc(h.dateLine)}, ${esc(h.city)}">
+          <span>${esc(dt.month)}</span><i aria-hidden="true"></i><b>${esc(dt.days)}</b><i aria-hidden="true"></i><span>${esc(dt.year)}</span>
+        </p>
+        <p class="hero__weekdays hero__in" style="--i:5">${esc(dt.weekdays)} <span aria-hidden="true">·</span> ${esc(h.city)}</p>
+        <p class="hero__tag hero__in" style="--i:6">${esc(c.hashtag)}</p>
+      </div>
+      <a class="scroll-cue hero__in" style="--i:7" href="#invitation" aria-label="Scroll to the invitation">
+        <span>${esc(h.scrollLabel)}</span>${use('i-chevron', 'scroll-cue__icon')}
+      </a>
+    </section>
+    <section class="haveli" id="invitation" data-art aria-labelledby="invite-title">
+      <span class="visually-hidden" role="img" aria-label="${esc(h.imageAlt)}"></span>
+      <div class="scene">
+        <div class="scene__content">
+          <h2 class="visually-hidden" id="invite-title">Wedding invitation</h2>
           <p class="invocation reveal" lang="hi">${esc(v.invocation)}</p>
           <p class="invite__text reveal">${lines(v.blessing)}</p>
           <p class="invite__hosts reveal">${names(v.hosts)}</p>
@@ -203,8 +210,8 @@ function hero(c) {
           <p class="invite__parent reveal">${lines(v.groom.lines)}</p>
         </div>
       </div>
-    </div>
-  </section>`,
+    </section>
+  </div>`,
   };
 }
 
@@ -600,7 +607,7 @@ export function renderHead(c, { siteUrl = '' } = {}) {
 
     <link rel="preload" href="/fonts/PinyonScript-400.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/fonts/CormorantGaramond-var.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" as="image" href="${esc(c.hero.image)}" fetchpriority="high">
+    <link rel="preload" as="image" href="${esc(c.hero.cover)}" imagesrcset="${esc(c.hero.coverSrcset)}" imagesizes="(min-width: 600px) 480px, 100vw" fetchpriority="high">
     <style>${FONT_FACES}
 :root{--arch-mask:${archMaskCss()}}</style>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
